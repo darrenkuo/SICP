@@ -1,0 +1,10 @@
+$def with (render)
+<html>
+  <header>
+    $:render[0].render()
+    $:render[1].render()
+  </header>
+  <body>
+    $:render[2].render()
+  </body>
+</html>

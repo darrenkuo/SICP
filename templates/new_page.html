@@ -1,0 +1,61 @@
+$def with(object, path)
+<h2>Create New Page under path $:path</h2>
+<script type="text/javascript">
+  function getDateString(id) {
+    var dayObj = document.getElementById(id+"Day");
+    var monthObj = document.getElementById(id+"Month");
+    var yearObj = document.getElementById(id+"Year");
+    return monthObj.options[monthObj.selectedIndex].value + "/" + dayObj.options[dayObj.selectedIndex].value + "/" + yearObj.options[yearObj.selectedIndex].value;
+  }
+
+  function generateConstraints() {
+    var pages = document.getElementById('pages');
+    var result = "True";
+    for (i = 0; i < pages.children.length; i++) {
+        if (pages.children[i].nodeName != "INPUT")
+	   continue;
+	if (pages.children[i].checked == true) {
+	   result += " and checkAccessed(" + pages.children[i].id + ", user)";
+        }
+    }
+
+    var dateString1 = getDateString("before_date");
+    var dateString2 = getDateString("after_date");
+    var date1 = new Date(dateString1);
+    var date2 = new Date(dateString2);
+    if (document.getElementById("before_check_").checked)
+       result += " and (time < " + date1.getTime() + ")";
+    if (document.getElementById("after_check_").checked)
+       result += " and (time > " + date2.getTime() + ")";
+    document.getElementById('advance').value = result;
+  }
+
+  function checkAdvance() {
+    if (document.getElementById("advance").value == "") {
+       generateConstraints();
+    }
+    post_to_url("/new_page", {'title' : document.getElementById('title').value, 'code' : document.getElementById('advance').value, 'page' : '$:path', 'type' : document.getElementById('page_type').value});
+  }
+  function post_to_url(path, params, method) {
+    method = method || "post"; // Set method to post by default, if not specified.
+
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", path);
+
+    for(var key in params) {
+        var hiddenField = document.createElement("input");
+        hiddenField.setAttribute("type", "hidden");
+        hiddenField.setAttribute("name", key);
+        hiddenField.setAttribute("value", params[key]);
+
+        form.appendChild(hiddenField);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+  }
+</script>
+$:object.render()

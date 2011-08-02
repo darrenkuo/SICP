@@ -1,0 +1,14 @@
+$def with (user, form)
+$if user == '!@#$%^&*anonymous*&^%$#@!':
+    <p>You are not logged in.</p>
+    <p>
+      <form name="test" method="POST"> 
+      $:form.render()
+      <input type="submit" name="button" value="Login" />
+      </form>
+    </p>
+    <p><a href="./register">Register</a></p>
+$else:
+    <p>You are logged in as: $user</p>
+    $:form.render()
+    <p><a href="./logout">Logout</a></p>
