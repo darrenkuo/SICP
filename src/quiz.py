@@ -88,7 +88,8 @@ def getQuiz(user, page=''):
 
     return (sidebar_css(), quiz_js(question_type=question_type, page=page), 
             lesson_layout(content=lesson_content(title=data['title'], 
-                                                 content=html, path=page)))
+                                                 content=html, path=page,
+                                                 renderContent=False)))
     
 def evalQuiz(user, data):
     f = open(join(quiz_requests, '%s.quiz-%s.%d' % 
