@@ -1,6 +1,9 @@
 import web
 
 from web import form
+from re import match
+
+import globals as globals_61as
 
 class p(form.Input):
     def __init__(self, txt, *validators, **attrs):
@@ -58,7 +61,7 @@ class chapter_entry(form.Input):
         super(chapter_entry, self).__init__(name, *validators, **attrs)
 
     def render(self):
-        return '<div>%s&nbsp;&nbsp;&nbsp;<a href="/new_page?page=%s">New Page</a>&nbsp;&nbsp;&nbsp;<a href="/edit_page?page%s">Edit Page</a>&nbsp;&nbsp;<a href="/up?page=%s">Up</a>&nbsp;&nbsp;<a href="/down?page=%s">Down</a></div>' % (self.text, self.path, self.path, self.path, self.path)
+        return '<div>%s&nbsp;&nbsp;&nbsp;<a href="/new_page?page=%s">New Page</a>&nbsp;&nbsp;&nbsp;<a href="/edit_page?page=%s">Edit Page</a>&nbsp;&nbsp;<a href="/up?page=%s">Up</a>&nbsp;&nbsp;<a href="/down?page=%s">Down</a></div>' % (self.text, self.path, self.path, self.path, self.path)
 
 class div(form.Input):
     def __init__(self, name, components, *validators, **attrs):
@@ -75,13 +78,25 @@ class div(form.Input):
 class Checklist(form.Input):
     def __init__(self, name, checklist, *validators, **attrs):
         self.checklist = checklist
+        self.code = ''
+        if 'code' in attrs:
+            self.code = attrs.pop('code')
         super(Checklist, self).__init__(name, *validators, **attrs)
 
     def render(self):
+        indices = []
+        if self.code:
+            for line in self.code.split('and'):
+                m = match('checkAccessed\(([\d]+), user\)', line.strip())
+                if m:
+                    indices.append(int(m.groups()[0]))
+
         html_code = '<form id="%s">\n' % (self.name)
         for ID, text in self.checklist.iteritems():
-            html_code += ('<input type="checkbox" id="%s"/>%s<br/>\n' % 
-                          (ID, text))
+            if ID in indices:
+                html_code += ('<input type="checkbox" id="%s" checked=true />%s<br/>\n' % (ID, text))
+            else:
+                html_code += ('<input type="checkbox" id="%s" />%s<br/>\n' % (ID, text))
 
         return '%s</form>\n' % (html_code)
 
@@ -275,8 +290,8 @@ class ScriptButton(form.Input):
         super(ScriptButton, self).__init__(name, *validators, **attrs)
 
     def render(self):
-        html_code = '<button onclick="%s;">%s</button>' % (self.onclick,
-                                                           self.name)
+        html_code = '<button onclick="%s">%s</button>' % (self.onclick,
+                                                          self.name)
 
         return html_code
 
@@ -313,3 +328,14 @@ class js(form.Input):
 
     def render(self):
         return '<script type="text/javascript">%s</script>' % (self.script)
+
+class WeekSelector(form.Input):
+    def __init__(self, name, *validators, **attrs):
+        self.attrs = attrs
+        super(WeekSelector, self).__init__(name, *validators, **attrs)
+
+    def render(self):
+        html = '<select %s>\n' % (self.attrs)
+        for i in range(1, globals_61as.weeks + 1):
+            html += '<option value=%d>Week %d</option>\n' % (globals_61as.starting_date + (globals_61as.week_milliseconds * (i - 1)), i)
+        return '%s</select>' % (html)

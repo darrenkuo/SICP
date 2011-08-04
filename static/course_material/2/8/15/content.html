@@ -1,0 +1,78 @@
+<P>Don't forget that a function can have only <EM>one</EM> return value.
+For example, here's a program that's supposed to return the sum of the
+squares of its two arguments:
+ 
+<P><PRE>(define (sum-of-squares x y)                 ;; wrong!
+  (square x)
+  (square y))
+</PRE> 
+ 
+<P>The problem is that the body of this procedure has two expressions,
+instead of just one.  As it turns out, Scheme just ignores the value of the
+first expression in cases like this, and returns the value of the last one.
+What the programmer wants is the <EM>sum</EM> of these two values, so the
+procedure should say
+ 
+<P><PRE>(define (sum-of-squares x y)
+  (+ (square x)
+     (square y)))
+</PRE> 
+ 
+<P>Another pitfall comes from thinking that a procedure call changes the
+value of a parameter.  Here's a faulty program that's supposed to compute
+the function described by <EM>f</EM>(<EM>x</EM>)=3<EM>x</EM>+10:
+ 
+<P><PRE>(define (f x)                                ;; wrong!
+  (* x 3)
+  (+ x 10))
+</PRE> 
+ 
+<P>Again, the first expression has no effect and Scheme will just
+return the value <EM>x</EM>+10.
+ 
+<P>A very common pitfall in Scheme comes from choosing the name of
+a procedure as a parameter.  It doesn't come up very often with
+procedures like the ones in this chapter whose domains and ranges
+are both numbers, but it will be more likely later.  If you have a
+program like this:
+ 
+<P><PRE>(define (square x)
+  (* x x))
+ 
+(define (area square)                        ;; wrong!
+  (square square))
+</PRE> 
+ 
+<P>then you'll get in trouble when you invoke the procedure, for
+example, by saying <CODE>(area 8)</CODE>.  The <CODE>area</CODE> little person will
+substitute <CODE>8</CODE> for <CODE>square</CODE> everywhere in the procedure definition,
+leaving you with the expression <CODE>(8 8)</CODE> to evaluate.  That expression
+would mean to apply the procedure <CODE>8</CODE> to the argument <CODE>8</CODE>, but
+<CODE>8</CODE> isn't a procedure, so an error message results.
+ 
+<P>It isn't a problem if the formal parameter is the name of a procedure that
+you don't use inside the body.  The problem arises when you try to use the
+same name, e.g., <CODE>square</CODE>, with two meanings within a single procedure.
+But special forms are an exception; you can never use the name of a special
+form as a parameter.
+ 
+<P>A similar problem about name conflicts comes up if you try to
+use a keyword (the name of a special form, such as <CODE>define</CODE>) as
+some other kind of name&mdash;either a formal parameter or the name of a
+procedure you're defining.  We're listing this separately because the
+result is likely to be different.  Instead of getting the wrong value
+substituted, as above, you'll probably see a special error message
+along the lines of &quot;improper use of keyword.&quot;
+ 
+<P>Formal parameters <EM>must</EM> be words.  Some people try to write
+procedures that have compound expressions as the formal parameters, like this:
+ 
+<P><PRE>(define (f (+ 3 x) y)                        ;; wrong!
+  (* x y))
+</PRE> 
+ 
+<P>Remember that the job of the procedure definition is only to
+provide a <EM>name</EM> for the argument.  The <EM>actual</EM> argument isn't
+pinned down until you invoke the procedure.  People who write programs like
+the one above are trying to make the procedure definition do some of the job
+of the procedure invocation.

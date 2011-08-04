@@ -1,0 +1,33 @@
+<P><A NAME="g10"></A> 
+<A NAME="g11"></A> 
+Since a little person can't do his or her job until all of the necessary
+subexpressions have been evaluated by other little people, we can &quot;fast
+forward&quot; this process by skipping the parts about &quot;Alice waits for Bernie
+and Cordelia&quot; and starting with the completion of the smaller tasks by the
+lesser little people.
+ 
+<P>To keep track of which result goes into which larger computation, you can
+write down a complicated expression and then <EM>rewrite</EM> it repeatedly,
+each time replacing some small expression with a simpler expression
+that has the same value.
+ 
+<P><PRE>(+ (* (- 10 7) (+ 4 1)) (- 15 (/ 12 3)) 17)
+(+ (* 3        (+ 4 1)) (- 15 (/ 12 3)) 17)
+(+ (* 3        5      ) (- 15 (/ 12 3)) 17)
+(+ 15                   (- 15 (/ 12 3)) 17)
+(+ 15                   (- 15 4       ) 17)
+(+ 15                   11              17)
+43
+</PRE> 
+ 
+<P>In each line of the diagram, the boxed expression
+is the one that will be replaced with its value on the following line.
+ 
+<P>If you like, you can save some steps by evaluating <EM>several</EM> small
+expressions from one line to the next:
+ 
+<P><PRE>(+ (* (- 10 7) (+ 4 1)) (- 15 (/ 12 3)) 17)
+(+ (* 3        5      ) (- 15 4       ) 17)
+(+ 15                   11              17)
+43
+</PRE> 

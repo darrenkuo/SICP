@@ -1,0 +1,35 @@
+<P>If Scheme isn't your first programming language, you're probably accustomed
+to dealing with English text on a computer quite differently.  Many other
+languages treat a sentence, for example, as simply a collection (a
+&quot;string&quot;) of <EM>characters</EM> such as letters, spaces, and punctuation.
+Those languages don't help you maintain the two-level nature of English
+text, in which a sentence is composed of words, and a word is composed of
+letters.
+ 
+<P>Historically, computers just dealt with numbers.  You could add two numbers,
+move a number from one place in the computer's memory to another place, and
+so on.  Since each instruction in the computer's native <EM>machine
+language</EM> couldn't process anything larger than a number, programmers
+developed the attitude that a single number is a &quot;real thing&quot; while
+anything more complicated has to be considered as a collection of things,
+rather than as a single thing in itself.
+ 
+<P>The computer represents a text character as a single number.  In many
+programming languages, therefore, a character is a &quot;real thing,&quot; but
+a word or sentence is understood only as a collection of these
+character-code numbers.
+ 
+<P>But this isn't the way in which human beings normally think about their own
+language.  To you, a word isn't primarily a string of characters (although
+it may temporarily seem like one if you're competing in a spelling bee).
+It's more like a single unit of meaning.  Similarly, a sentence is a
+linguistic structure whose parts are words, not letters and spaces.
+ 
+<P>A programming language should let you express your ideas in terms that match
+<EM>your</EM> way of thinking, not the computer's way.  Technically, we say
+that words and sentences should be <EM>first-class data</EM> in our
+language.  This means that a sentence, for example, can be an argument to a
+procedure; it can be the value returned by a procedure; we can give it a name;
+and we can build aggregates whose elements are sentences.  So far we've seen
+how to do the first two of these.  We'll finish the job in Chapter
+7 (on <EM>variables</EM>) and Chapter 17 (on <EM>lists</EM>).

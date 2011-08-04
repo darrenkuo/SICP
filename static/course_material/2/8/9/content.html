@@ -1,0 +1,33 @@
+<P><CODE>Define</CODE> is a <EM><A NAME="g3"></A><A NAME="g4"></A>special form,</EM> an exception to the
+evaluation rule we've been going on about. Usually, an expression represents a procedure invocation, so
+the general rule is that Scheme first evaluates all the subexpressions, and
+then applies the resulting procedure to the resulting argument values.  The
+specialness of special forms is that Scheme <EM>doesn't</EM> evaluate all the
+subexpressions.  Instead, each special form has its own particular
+evaluation rule.  For example, when we defined <CODE>square</CODE>, no
+part of the definition was evaluated: not <CODE>square</CODE>, not <CODE>x</CODE>, and
+not <CODE>(* x x)</CODE>.  It wouldn't make sense to evaluate <CODE>(square x)</CODE> 
+because you can't invoke the <CODE>square</CODE> procedure before you define it!
+ 
+<P>It would be possible to describe special forms using the following model:
+&quot;Certain procedures want their arguments unevaluated, and Scheme recognizes
+them.  After refraining from evaluating <CODE>define</CODE>'s arguments, for
+example, Scheme invokes the <CODE>define</CODE> procedure with those unevaluated
+arguments.&quot; But in fact the designers of Scheme chose to think about it
+differently.  The entire special form that starts with <CODE>define</CODE> is just a
+completely different kind of thing from a procedure call.  In Scheme there
+is no procedure named <CODE>define</CODE>.  In fact, <CODE>define</CODE> is not the name
+of anything at all:
+ 
+<P><PRE>&gt; +
+#&lt;PRIMITIVE PROCEDURE +>
+ 
+&gt; define
+ERROR - INVALID CONTEXT FOR KEYWORD DEFINE
+</PRE> 
+ 
+<P>Nevertheless, in this book, unless it's really important to make
+the distinction, we'll talk as if there were a procedure called <CODE>define</CODE>.
+For example, we'll talk about &quot;<CODE>define</CODE>'s arguments&quot; and &quot;the value
+returned by <CODE>define</CODE>&quot; and &quot;invoking <CODE>define</CODE>.&quot;
+ 

@@ -1,0 +1,48 @@
+<P><CODE>#T</CODE> isn't the only true value.  In fact, <EM>every</EM> value is
+considered true except for <CODE>#f</CODE>.
+ 
+<P><PRE>&gt; (if (+ 3 4) 'yes 'no)
+YES
+</PRE> 
+ 
+<P>This allows us to have <EM>semipredicates</EM> that give
+slightly more information than just true or false.  For example, we can
+write an integer quotient procedure.  That is to say, our procedure will
+divide its first argument by the second, but only if the first is evenly
+divisible by the second.  If not, our procedure will return <CODE>#f</CODE>.
+ 
+<P><PRE>(define (<A NAME="g98"></A>integer-quotient big little)
+  (if (divisible? big little)
+      (/ big little)
+      #f))
+ 
+&gt; (integer-quotient 27 3)
+9
+ 
+&gt; (integer-quotient 12 5)
+#F
+</PRE> 
+ 
+<P><CODE>And</CODE> and <CODE>or</CODE> are also semipredicates.  We've already explained
+that <CODE>or</CODE> returns a true result as soon as it evaluates a true
+argument.  The particular true value that <CODE>or</CODE> returns is the value of
+that first true argument:
+ 
+<P><PRE>&gt; (or #f 3 #f 4)
+3
+</PRE> 
+ 
+<P><CODE>And</CODE> returns a true value only if all of its arguments are
+true.  In that case, it returns the value of the last argument:
+ 
+<P><PRE>&gt; (and 1 2 3 4 5)
+5
+</PRE> 
+ 
+<P>As an example in which this behavior is useful, we can rewrite
+<CODE>integer-quotient</CODE> more tersely:
+ 
+<P><PRE>(define (integer-quotient big little)        ;; alternate version
+  (and (divisible? big little)
+       (/ big little)))
+</PRE> 

@@ -1,0 +1,81 @@
+<P><CODE>If</CODE> is great for an either-or choice.  But sometimes there are several
+possibilities to consider:
+ 
+<P><PRE>(define (roman-value letter)
+  (if (equal? letter 'i)
+      1
+      (if (equal? letter 'v)
+          5
+          (if (equal? letter 'x)
+              10
+              (if (equal? letter 'l)
+                  50
+                  (if (equal? letter 'c)
+                      100
+                      (if (equal? letter 'd)
+                          500
+                          (if (equal? letter 'm)
+                              1000
+                              'huh?))))))))
+</PRE> 
+ 
+<P>That's pretty hideous.  Scheme provides a shorthand notation for
+situations like this in which you have to choose from among several
+possibilities: the <A NAME="g99"></A><A NAME="g100"></A>special form <A NAME="g101"></A><CODE>cond</CODE>.
+<A NAME="cond"></A> 
+ 
+<P><PRE>(define (<A NAME="g102"></A>roman-value letter)
+  (cond ((equal? letter 'i) 1)
+        ((equal? letter 'v) 5)
+        ((equal? letter 'x) 10)
+        ((equal? letter 'l) 50)
+        ((equal? letter 'c) 100)
+        ((equal? letter 'd) 500)
+        ((equal? letter 'm) 1000)
+        (else 'huh?)))
+</PRE> 
+ 
+<P>The tricky thing about <CODE>cond</CODE> is that it doesn't use parentheses in quite
+<A NAME="g103"></A> the same way as the rest
+of Scheme.  Ordinarily, parentheses mean procedure invocation.  In <CODE>cond</CODE>, <EM>most</EM> of the parentheses still mean that, but <EM>some</EM> of
+them are used to group pairs of tests and results.  We've reproduced the
+same <CODE>cond</CODE> expression below, indicating the funny ones in boldface.
+ 
+<P><PRE>(define (roman-value letter)
+  (cond <STRONG><BIG>(</BIG></STRONG>(equal? letter 'i) 1<STRONG><BIG>)</BIG></STRONG> 
+        <STRONG><BIG>(</BIG></STRONG>(equal? letter 'v) 5<STRONG><BIG>)</BIG></STRONG> 
+        <STRONG><BIG>(</BIG></STRONG>(equal? letter 'x) 10<STRONG><BIG>)</BIG></STRONG> 
+        <STRONG><BIG>(</BIG></STRONG>(equal? letter 'l) 50<STRONG><BIG>)</BIG></STRONG> 
+        <STRONG><BIG>(</BIG></STRONG>(equal? letter 'c) 100<STRONG><BIG>)</BIG></STRONG> 
+        <STRONG><BIG>(</BIG></STRONG>(equal? letter 'd) 500<STRONG><BIG>)</BIG></STRONG> 
+        <STRONG><BIG>(</BIG></STRONG>(equal? letter 'm) 1000<STRONG><BIG>)</BIG></STRONG> 
+        <STRONG><BIG>(</BIG></STRONG>else 'huh?<STRONG><BIG>)</BIG></STRONG> ))
+</PRE> 
+ 
+<P><CODE>Cond</CODE> takes any number of arguments, each of which is <EM>two
+expressions</EM> inside a pair of parentheses.  Each argument is called a <EM><A NAME="g104"></A><A NAME="g105"></A>cond clause.</EM> In the example above, one typical clause is
+ 
+<P><PRE><STRONG><BIG>(</BIG></STRONG>(equal? letter 'l) 50<STRONG><BIG>)</BIG></STRONG> 
+</PRE> 
+ 
+<P>The outermost parentheses on that line enclose two expressions.
+The first of the two expressions (the <EM>condition</EM>) is taken as
+true or false, just like the first argument to <CODE>if</CODE>.  The second
+expression of each pair (the <EM>consequent</EM>) is a candidate for
+the return value of the entire <CODE>cond</CODE> invocation.
+ 
+<P><CODE>Cond</CODE> examines its arguments from left to right.  Remember that since
+<CODE>cond</CODE> is a special form, its arguments are not evaluated ahead of time.
+For each argument, <CODE>cond</CODE> evaluates the first of the two expressions
+within the argument.  If that value turns out to be true, then <CODE>cond</CODE> 
+evaluates the second expression in the same argument, and returns that value
+without examining any further arguments.  But if the value is false, then
+<CODE>cond</CODE> does <EM>not</EM> evaluate the second expression; instead, it goes
+on to the next argument.
+ 
+<P>By convention, the last argument always starts with the word <A NAME="g106"></A><CODE>else</CODE> 
+instead of an expression.  You can think of this as representing a true
+value, but <CODE>else</CODE> doesn't mean true in any other context; you're only
+allowed to use it as the condition of the last clause of a <CODE>cond</CODE>.
+ 
+<P>Don't get into bad habits of thinking about the

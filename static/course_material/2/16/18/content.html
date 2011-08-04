@@ -1,0 +1,39 @@
+<P>Functions for putting things together are called <EM>constructors.</EM> 
+For now, we just have two of them: <A NAME="g22"></A><CODE>word</CODE> and <A NAME="g23"></A><CODE>sentence</CODE>.  <CODE>Word</CODE> takes any number of words as arguments and joins them all together
+into one humongous word:
+ 
+<P><PRE>&gt; (word 'ses 'qui 'pe 'da 'lian 'ism)
+SESQUIPEDALIANISM
+ 
+&gt; (word 'now 'here)
+NOWHERE
+ 
+&gt; (word 35 893)
+35893
+</PRE> 
+ 
+<P><CODE>Sentence</CODE> is similar, but slightly different, since it can take both 
+words and sentences as arguments:
+ 
+<P><PRE>&gt;  (sentence 'carry 'that 'weight)
+(CARRY THAT WEIGHT)
+ 
+&gt; (sentence '(john paul) '(george ringo))
+(JOHN PAUL GEORGE RINGO)
+</PRE> 
+ 
+<P><CODE>Sentence</CODE> is also too hard to type, so there's the
+abbreviation <A NAME="g24"></A><CODE>se</CODE>.
+ 
+<P><PRE>&gt; (se '(one plus one) 'makes 2)
+(ONE PLUS ONE MAKES 2)
+</PRE> 
+ 
+<P>By the way, why did we have to quote <CODE>makes</CODE> in the last example, but
+not <CODE>2</CODE>?  It's because numbers are self-evaluating, as we said
+<A NAME="g25"></A> 
+<A NAME="g26"></A> 
+in Chapter 3.  We have to quote <CODE>makes</CODE> because otherwise Scheme
+would look for something named <CODE>makes</CODE> instead of using the word
+itself.  But numbers can't be the names of things; they represent
+themselves.  (In fact, you could quote the <CODE>2</CODE> and it wouldn't make any difference&mdash;do you see why?)

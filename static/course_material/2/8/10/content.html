@@ -1,0 +1,62 @@
+<P>Throughout most of this book, our procedures will describe processes that
+<A NAME="g5"></A> 
+<A NAME="g6"></A> 
+compute <EM>functions.</EM> A function is a connection between some values
+you already know and a new value you want to find out.  For example, the
+<EM>square</EM> function takes a number, such as 8, as its input value and
+returns another number, 64 in this case, as its output value.  The <EM>plural</EM> function takes a noun, such as &quot;computer,&quot; and returns another
+word, &quot;computers&quot; in this example.  The technical term for the function's
+input value is its <EM>argument.</EM> A function may take more than one
+argument; for example, the <CODE>remainder</CODE> function takes two arguments,
+such as 12 and 5.  It returns one value, the remainder on dividing the first
+argument by the second (in this case, 2).
+ 
+<P>We said earlier that a procedure is &quot;a description of the process by which
+a computer can work out some result that we want.&quot; What do we mean by <EM>process</EM>?  Consider these two definitions:
+ 
+<P><P><P><CENTER><EM>f</EM>(<EM>x</EM>)=3<EM>x</EM>+12<BR> 
+<EM>g</EM>(<EM>x</EM>)=3(<EM>x</EM>+4)<P></CENTER> 
+ 
+The two definitions call for different arithmetic operations.  For
+example, to compute <EM>f</EM>(8) we'd multiply 8 by 3, then add 12 to the result.
+To compute <EM>g</EM>(8), we'd add 4 to 8, then multiply the result by 3.  But we
+get the same answer, 36, either way.  These two equations describe different
+<EM>processes,</EM> but they compute the same <EM>function.</EM> The function
+is just the association between the starting value(s) and the resulting
+value, no matter how that result is computed.  In Scheme we could say
+ 
+<P><PRE>(define (f x)
+  (+ (* 3 x) 12))
+ 
+(define (g x)
+  (* 3 (+ x 4)))
+</PRE> 
+ 
+<P>and we'd say that <CODE>f</CODE> and <CODE>g</CODE> are two procedures that
+represent the same function.
+ 
+<P>In real life, functions are not always represented by procedures.  We could
+represent a function by a <EM>table</EM> showing all its possible values,
+like this:
+ 
+<P><P><CENTER><TABLE><TR><TD>Alabama<TD>&nbsp;&nbsp;&nbsp;Montgomery
+<TR><TD>Alaska<TD>&nbsp;&nbsp;&nbsp;Juneau
+<TR><TD>Arizona<TD>&nbsp;&nbsp;&nbsp;Phoenix
+<TR><TD>Arkansas<TD>&nbsp;&nbsp;&nbsp;Little Rock
+<TR><TD>California<TD>&nbsp;&nbsp;&nbsp;Sacramento
+<TR><TD>&hellip;<TD>&nbsp;&nbsp;&nbsp;&hellip;</TABLE></CENTER> 
+ 
+This table represents the State Capital function; we haven't shown
+all the lines of the complete table, but we could.  There are only a finite
+number of U.S. states.  Numeric functions can also be represented by <EM>graphs,</EM> as you probably learned in high school algebra.  In this book our
+focus is on the representation of functions by procedures.  The only reason
+for showing you this table example is to clarify what we mean when we say
+that a function <EM>is represented by</EM> a procedure, rather than that a
+function <EM>is</EM> the procedure.
+ 
+<P>We'll say &quot;the procedure <CODE>f</CODE>&quot; when we want to discuss the operations
+we're telling Scheme to carry out.  We'll say &quot;the function represented by
+<CODE>f</CODE>&quot; when our attention is focused on the value returned, rather than
+on the mechanism.  (But we'll often abbreviate that lengthy second phrase
+with &quot;the function <CODE>f</CODE>&quot; unless the context is especially
+confusing.)

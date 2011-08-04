@@ -1,0 +1,89 @@
+<P>We're going to write a procedure that solves quadratic equations.  (We know
+this is the prototypical boring programming problem, but it illustrates
+clearly the point we're about to make.)
+ 
+<P>We'll use the quadratic formula that you learned in high school
+algebra class:
+ 
+<P><P><CENTER><IMG SRC="###content_dir###/math1.gif" ALT="math display"></CENTER><P> 
+ 
+<P><PRE>(define (roots a b c)
+  (se (/ (+ (- b) (sqrt (- (* b b) (* 4 a c))))
+         (* 2 a))
+      (/ (- (- b) (sqrt (- (* b b) (* 4 a c))))
+         (* 2 a))))
+</PRE> 
+ 
+<P>Since there are two possible solutions, we return a sentence containing two
+numbers.  This procedure works fine, but it does have the disadvantage of repeating a
+lot of the work.  It computes the square root part of the formula twice.
+We'd like to avoid that inefficiency.
+ 
+<P>One thing we can do is to compute the square root and use that as the
+actual argument to a helper procedure that does the rest of the job:
+ 
+<P><PRE>(define (roots a b c)
+  (roots1 a b c (sqrt (- (* b b) (* 4 a c)))))
+ 
+(define (roots1 a b c discriminant)
+  (se (/ (+ (- b) discriminant) (* 2 a))
+      (/ (- (- b) discriminant) (* 2 a))))
+</PRE> 
+ 
+<P>This version evaluates the square root only once.  The resulting
+value is used as the argument named <CODE>discriminant</CODE> in <CODE>roots1</CODE>.
+ 
+<P>We've solved the problem we posed for ourselves initially: avoiding the
+redundant computation of the discriminant (the square-root part of the
+formula).  The cost, though, is that we had to define an auxiliary procedure
+<CODE>roots1</CODE> that doesn't make much sense on its own.  (That is, you'd never
+invoke <CODE>roots1</CODE> for its own sake; only <CODE>roots</CODE> uses it.)
+ 
+<P>Scheme provides a notation to express a computation of this kind more
+<A NAME="splet"></A> 
+conveniently.  It's called <A NAME="g13"></A><CODE>let</CODE>:
+ 
+<P><PRE>(define (roots a b c)
+  (let ((discriminant (sqrt (- (* b b) (* 4 a c)))))
+    (se (/ (+ (- b) discriminant) (* 2 a))
+        (/ (- (- b) discriminant) (* 2 a)))))
+</PRE> 
+ 
+<P>Our new program is just an abbreviation for the previous version:
+In effect, it creates a temporary procedure just like <CODE>roots1</CODE>, but
+without a name, and invokes it with the specified argument value.  But the
+<CODE>let</CODE> notation rearranges things so that we can say, in the right order,
+&quot;let the variable <CODE>discriminant</CODE> have the value <CODE>(sqrt&hellip)</CODE> 
+and, using that variable, compute the body.&quot;
+ 
+<P><CODE>Let</CODE> is a <A NAME="g14"></A><A NAME="g15"></A>special form that takes two arguments.  The first is
+a sequence of name-value pairs enclosed in parentheses.  (In this example,
+there is only one name-value pair.)  The second argument, the <EM>body</EM> 
+of the <CODE>let</CODE>, is the expression to evaluate.
+ 
+<P> 
+Now that we have this notation, we can use it with more than one name-value
+connection to eliminate even more redundant computation:
+ 
+<P><PRE>(define (<A NAME="g16"></A>roots a b c)
+  (let ((discriminant (sqrt (- (* b b) (* 4 a c))))
+        (minus-b (- b))
+        (two-a (* 2 a)))
+    (se (/ (+ minus-b discriminant) two-a)
+        (/ (- minus-b discriminant) two-a))))
+</PRE> 
+ 
+<P>In this example, the first argument to <CODE>let</CODE> includes three
+name-value pairs.  It's as if we'd defined and invoked a procedure like
+the following:
+ 
+<P><PRE>(define (roots1 discriminant minus-b two-a) ...)
+</PRE> 
+ 
+<P>Like <CODE>cond</CODE>, <CODE>let</CODE> uses parentheses both with the usual meaning
+(invoking a procedure) and to group sub-arguments that belong together.  This
+<A NAME="g17"></A> 
+grouping happens in two ways.  Parentheses are used to group a name and the
+expression that provides its value.  Also, an additional pair of parentheses
+surrounds the entire collection of name-value pairs.
+ 

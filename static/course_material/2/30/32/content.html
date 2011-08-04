@@ -1,0 +1,67 @@
+<P>Until now, we've been using two very different kinds of naming.  We have
+names for procedures, which are created permanently by <CODE>define</CODE> and are
+usable throughout our programs; and we have names for procedure arguments,
+which are associated with values temporarily when we call a
+procedure and are usable only inside that procedure.
+ 
+<P>These two kinds of naming seem to be different in every way.  One is for
+procedures, one for data; the one for procedures makes a permanent, global
+name, while the one for data makes a temporary, local name.  That picture
+does reflect the way that procedures and other data are <EM>usually</EM> used,
+but we'll see that really there is only one kind of naming.  The
+boundaries can be crossed:  Procedures can be arguments to other
+procedures, and any kind of data
+can have a permanent, global name.  Right now we'll look at that last
+point, about global variables.
+ 
+<P>Just as we've been using <CODE>define</CODE> to associate names with procedures
+globally, we can also use it for other kinds of data:
+ 
+<P><PRE>&gt; (define pi 3.141592654)
+ 
+&gt; (+ pi 5)
+8.141592654
+ 
+&gt; (define song '(I am the walrus))
+ 
+&gt; (last song)
+WALRUS
+</PRE> 
+ 
+<P>Once defined, a global variable can be used anywhere, just as a defined
+procedure can be used anywhere.  (In fact, defining a procedure creates a
+variable whose value is the procedure.  Just as <CODE>pi</CODE> is the name of a
+variable whose value is 3.141592654, <CODE>last</CODE> is the name of a variable
+whose value is a primitive procedure.  We'll come back to this
+point in Chapter 9.)  When the name of a global variable
+appears in an expression, the corresponding value must be substituted, just
+as actual argument values are substituted for formal parameters.
+ 
+<P>When a little person is hired to carry out a compound procedure, his or her
+first step is to substitute actual argument values for formal parameters in
+the body.  The same little person substitutes values for global variable
+names also.  (What if there is a global variable whose name happens to be
+used as a formal parameter in this procedure?  Scheme's rule is that the
+formal parameter takes precedence, but even though Scheme knows what to do,
+conflicts like this make your program harder to read.)
+ 
+<P>How does this little person know what values to substitute for global
+variable names?
+<A NAME="g8"></A> 
+<A NAME="g9"></A> 
+What makes a variable &quot;global&quot; in the little-people model
+is that <EM>every</EM> little person knows its value.  You can imagine that
+there's a big chalkboard, with all the global definitions written on it, that
+all the little people can see.
+If you prefer, you could imagine that whenever a global variable is defined,
+the <CODE>define</CODE> specialist climbs up a huge ladder, picks up a megaphone,
+and yells something like &quot;Now hear this!  <CODE>Pi</CODE> is 3.141592654!&quot;
+ 
+<P>The association of a formal parameter (a name) with an actual argument (a
+value) is called a <EM><A NAME="g10"></A><A NAME="g11"></A>local variable.</EM> 
+ 
+<P>It's awkward to have to say &quot;Harry associates the value 7 with the name
+<CODE>foo</CODE>&quot; all the time.  Most of the time we just say &quot;<CODE>foo</CODE> has the
+value 7,&quot; paying no attention to whether this association is in some
+particular little person's head or if everybody knows it.
+ 

@@ -1,0 +1,40 @@
+<P>A Scheme program consists of one or more <EM>procedures.</EM> A procedure is
+a description of the process by which a computer can work out some result
+that we want.  Here's how to define a procedure that returns the square of
+its argument:
+ 
+<P><PRE>(define (<A NAME="g1"></A>square x)
+  (* x x))
+</PRE> 
+ 
+<P>(The value returned by <A NAME="g2"></A><CODE>define</CODE> may differ depending on the
+version of Scheme you're using.  Many versions return the name of the
+procedure you're defining, but others return something else.  It doesn't
+matter, because when you use <CODE>define</CODE> you aren't interested in the
+returned value, but rather in the fact that Scheme remembers the new
+definition for later use.)
+ 
+<P>This is the definition of a procedure called <CODE>square</CODE>.  <CODE>Square</CODE> 
+takes one argument, a number, and it returns the square of that number.
+Once you have defined <CODE>square</CODE>, you can use it just the same way as you
+use primitive procedures:
+ 
+<P><PRE>&gt; (square 7)
+49
+ 
+&gt; (+ 10 (square 2))
+14
+ 
+&gt; (square (square 3))
+81
+</PRE> 
+ 
+<P>This procedure definition has four parts.  The first is the word <CODE>define</CODE>, which indicates that you are defining something.  The second and
+third come together inside parentheses: the name that you want to give the
+procedure and the name(s) you want to use for its argument(s).  This
+arrangement was chosen by the designers of Scheme because it looks like the
+form in which the procedure will be invoked.  That is, <CODE>(square x)</CODE> looks
+like <CODE>(square 7)</CODE>.  The fourth part of the definition is the <EM>body:</EM> an expression whose value provides the function's return value.
+ 
+<P><CENTER><IMG SRC="###content_dir###/definition.jpg" ALT="figure: definition"></CENTER> 
+ 

@@ -1,0 +1,48 @@
+<P>Suppose we want to write a <CODE>greet</CODE> procedure that works like this:
+ 
+<P><PRE>&gt; (greet '(brian epstein))
+(PLEASED TO MEET YOU BRIAN - HOW ARE YOU?)
+ 
+&gt; (greet '(professor donald knuth))
+(PLEASED TO MEET YOU PROFESSOR KNUTH - HOW ARE YOU?)
+</PRE> 
+ 
+<P>The response of the program in these two cases is almost the same;
+the only difference is in the form of the person's name.
+ 
+<P>This procedure could be written in two ways:
+ 
+<P><PRE>(define (greet name)
+  (if (equal? (first name) 'professor)
+      (se '(pleased to meet you)
+      'professor
+      (last name)
+      '(- how are you?))
+      (se '(pleased to meet you)
+      (first name)
+      '(- how are you?))))
+ 
+(define (greet name)
+  (se '(pleased to meet you)
+      (if (equal? (first name) 'professor)
+      (se 'professor (last name))
+      (first name))
+      '(- how are you?)))
+</PRE> 
+ 
+<P>The second version avoids repeating the common parts of the
+response by using <CODE>if</CODE> within a larger expression.
+ 
+<P>Some people find it counterintuitive to use <CODE>if</CODE> as we did in the second
+version.  Perhaps the reason is that in some other programming languages,
+<CODE>if</CODE> is a &quot;command&quot; instead of a function like any other.  A mechanism
+that selects one part of a program to run, and leaves out another part, may
+seem too important to be a mere argument subexpression.  But in Scheme, the
+value returned by <EM>every</EM> function can be used as part of a larger
+expression.
+ 
+<P>We aren't saying anything new here.  We've already explained the idea of
+composition of functions, and we're just making the same point again about
+<CODE>if</CODE>.  But we've learned that many students expect <CODE>if</CODE> to be an
+exception, so we're taking the opportunity to emphasize the point: There are
+no exceptions to this rule.

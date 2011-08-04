@@ -1,0 +1,1 @@
+{'index': 21, 'type': u'lesson', 'readable': u'True and checkAccessed(1, user) and checkAccessed(2, user) and (not checkSF(SF_SCHEME, user))', 'chapters': ['22', '23', '24', '25', '26', '27', '28', '29'], 'title': u'True and False'}

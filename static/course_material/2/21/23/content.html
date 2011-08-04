@@ -1,0 +1,78 @@
+<P>Here's a procedure that returns the absolute value of a number:
+ 
+<P> 
+ 
+<P><PRE>(define (<A NAME="g82"></A>abs num)
+  (if (&lt; num 0)
+      (- num)
+      num))
+</PRE> 
+ 
+<P> 
+ 
+<P>(If you call <A NAME="g83"></A><CODE>-</CODE> with just one argument, it returns the
+negative of that argument.)  Scheme actually provides <A NAME="g84"></A><CODE>abs</CODE> as a
+primitive procedure, but we can redefine it.
+ 
+<P>Do you remember how to play buzz?  You're all sitting around the campfire
+and you go around the circle counting up from one.  Each person says a
+number.  If your number is divisible by seven or if one of its digits is a
+seven, then instead of calling out your number, you say &quot;buzz.&quot;
+ 
+<P><PRE>(define (<A NAME="g85"></A>buzz num)
+  (if (or (divisible? num 7) (member? 7 num))
+      'buzz
+      num))
+ 
+(define (<A NAME="g86"></A>divisible? big little)
+  (= (remainder big little) 0))
+</PRE> 
+ 
+<P><CODE>Or</CODE> can take any number of arguments, each of which must be
+true or false.  It returns true if any of its arguments are true, that is, if
+the first argument is true <EM>or</EM> the second argument is true <EM>or</EM>&hellip  (<CODE>Remainder</CODE>, as you know, takes two integers and tells
+you what the remainder is when you divide the first by the second.  If the
+remainder is zero, the first number is divisible by the second.)
+ 
+<P><CODE>Or</CODE> is one of three functions in Scheme that combine true or false
+values to produce another true or false value.  <CODE>And</CODE> returns true if
+<A NAME="g87"></A> all of its arguments are true, that is, the first <EM>and</EM> 
+second <EM>and</EM>&hellip  Finally, there's a function <A NAME="g88"></A><CODE>not</CODE> that
+takes exactly one argument, returning true if that argument is false and
+vice versa.
+ 
+<P>In the last example, the procedure we really wanted to write was <CODE>buzz</CODE>,
+but we found it useful to define <CODE>divisible?</CODE> also.  It's quite common
+that the easiest way to solve some problem is to write a <EM>helper
+procedure</EM> to do part of the work.  In this case the helper procedure
+computes a function that's meaningful in itself, but sometimes you'll want
+to write procedures with names like <CODE>buzz-helper</CODE> that are useful only
+in the context of one particular problem.
+ 
+<P>Let's write a program that takes a word as its argument and returns the
+plural of that word.  Our first version will just put an &quot;s&quot; on the end:
+ 
+<P><PRE>(define (plural wd)
+  (word wd 's))
+ 
+&gt; (plural 'beatle) 
+BEATLES
+ 
+&gt; (plural 'computer)
+COMPUTERS
+ 
+&gt; (plural 'fly)
+FLYS
+</PRE> 
+ 
+<P>This works for most words, but not those that end in &quot;y.&quot; Here's
+version two:
+ 
+<P><PRE>(define (<A NAME="g89"></A>plural wd)
+  (if (equal? (last wd) 'y)
+      (word (bl wd) 'ies)
+      (word wd 's)))
+</PRE> 
+ 
+<P>This isn't exactly right either; it thinks that the plural of
+&quot;boy&quot; is &quot;boies.&quot; 

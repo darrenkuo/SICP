@@ -1,0 +1,108 @@
+<P>We've paid a lot of attention to the details of formal parameters and actual
+arguments, but we've been a little handwavy about how a procedure actually computes a value when you invoke it.
+ 
+<P>We're going to explain what happens when you invoke a user-defined procedure.
+Every explanation is a story.  No story tells the entire truth, because there
+are always some details left out.  A <EM>model</EM> is a story that
+has just enough detail to help you understand whatever it's trying to explain
+but not so much detail that you can't see the forest for the trees.
+ 
+<P>Today's story is about the <EM>substitution</EM> model.  When a
+procedure is invoked, the goal is to carry out the computation described in
+its body.  The problem is that the body is written in terms of the formal
+parameters, while the computation has to use the actual argument values.  So
+what Scheme needs is a way to associate actual argument values with formal
+parameters.  It does this by making a new copy of the body of the procedure,
+in which it substitutes the argument values for every appearance of the
+formal parameters, and then evaluating the resulting expression.  So, if
+you've defined <CODE>square</CODE> with 
+ 
+<P><PRE>(define (square x)
+  (* x x))
+</PRE> 
+ 
+<P>then the body of <CODE>square</CODE> is <CODE>(* x x)</CODE>.  When you want to
+know the square of a particular number, as in <CODE>(square 5)</CODE>, Scheme
+substitutes the 5 for <CODE>x</CODE> everywhere in the body of square and evaluates
+the expression.  In other words, Scheme takes
+ 
+<P><PRE>(* x x)
+</PRE> 
+ 
+<P>then does the substitution, getting
+ 
+<P><PRE>(* 5 5)
+</PRE> 
+ 
+<P>and then evaluates that expression, getting 25.
+ 
+<P>If you just type <CODE>(* x x)</CODE> into Scheme, you will get an error message
+complaining that <CODE>x</CODE> doesn't mean anything.  Only after the substitution
+does this become a meaningful expression.
+ 
+<P>By the way, when we talk about &quot;substituting into the body,&quot; we don't mean
+that the procedure's definition is changed in any permanent way.  The body of
+the procedure doesn't change; what happens, as we said before, is that Scheme
+constructs a new expression that looks like the body, except for the
+substitutions.
+ 
+<P>There are little people who specialize in <CODE>square</CODE>, just as there
+are little people who specialize in <CODE>+</CODE> and <CODE>*</CODE>.  The difference is
+that the little people who do primitive procedures can do the work &quot;in their
+head,&quot; all at once.  The little people who carry out user-defined procedures
+have to go through this substitution business we're talking about here.
+Then they hire other little people to help evaluate the resulting expression,
+just as Alonzo hires people to help him evaluate the expressions you type
+directly to Scheme.
+ 
+<P>Let's say Sam, a little person who specializes in <CODE>square</CODE>, has been
+asked to compute <CODE>(square 6)</CODE>.  Sam carries out the substitution, and is
+left with the expression <CODE>(* 6 6)</CODE> to evaluate.  Sam then hires Tessa, a
+multiplication specialist, to evaluate this new expression.  Tessa tells Sam
+that her answer is 36, and, because the multiplication is the entire problem
+to be solved, this is Sam's answer also.
+ 
+<P>Here's another example:
+ 
+<P><PRE>(define (<A NAME="g20"></A>hypotenuse a b)
+  (sqrt (+ (square a) (square b))))
+ 
+&gt; (hypotenuse 5 12)
+</PRE> 
+ 
+<P> Suppose Alonzo hires Harry to compute this expression.
+Harry must first substitute the actual argument values (5 and 12) into the
+body of <CODE>hypotenuse</CODE>:
+ 
+<P><PRE>(sqrt (+ (square 5) (square 12)))
+</PRE> 
+ 
+<P>Now he evaluates that expression, just as Alonzo would evaluate it
+if you typed it at a Scheme prompt.  That is, Harry hires four little
+people: one <CODE>sqrt</CODE> expert, one <CODE>+</CODE> expert, and two <CODE>square</CODE> 
+experts. In particular, some little
+person has to evaluate <CODE>(square 5)</CODE>, by substituting 5 for <CODE>x</CODE> in
+the body of <CODE>square</CODE>, as in the earlier example.  Similarly, we
+substitute 12 for <CODE>x</CODE> in order to evaluate <CODE>(square 12)</CODE>:
+ 
+<P><PRE>(hypotenuse 5 12)                   ; substitute into HYPOTENUSE body
+(sqrt (+ (square 5) (square 12)))   ; substitute for (SQUARE 5)
+         (* 5 5)
+         25
+(sqrt (+ 25         (square 12)))   ; substitute for (SQUARE 12)
+                    (* 12 12)
+                    144
+(sqrt (+ 25         144))
+      (+ 25         144)            ; combine the results as before
+      169
+(sqrt 169)
+13
+</PRE> 
+ 
+<P>Don't forget, in the heady rush of learning about the substitution
+model, what you already knew from before:  Each piece of this computation is
+done by a little person, and some other little person is waiting for the
+result.  In other words, the substitution model tells us how <EM>each
+compound procedure</EM> is carried out, but doesn't change our picture of the
+way in which procedure invocations are <EM>composed</EM> into larger
+expressions.

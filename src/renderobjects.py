@@ -78,7 +78,7 @@ return radioObj[i].value;
 return "";
 }
     """
-        submit_func = "function submit() { var data={};"
+        submit_func = "function submit() { var data={};data['submitting']=true;"
         
         for q, t in question_type.iteritems():
             if t == 'r':

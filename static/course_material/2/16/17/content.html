@@ -1,0 +1,136 @@
+<P>So far all we've done with words and sentences is quote them.  To do more
+interesting work, we need tools for two kinds of operations:  We have to be
+able to take them apart, and we have to be able to put them
+together. We'll start with the take-apart tools; the technical term for them is <EM>selectors.</EM> 
+ 
+<P><PRE>&gt; (first 'something)
+S
+ 
+&gt; (first '(eight days a week))
+EIGHT
+ 
+&gt; (first 910)
+9
+ 
+&gt; (last 'something)
+G
+ 
+&gt; (last '(eight days a week))
+WEEK
+ 
+&gt; (last 910)
+0
+ 
+&gt; (butfirst 'something)
+OMETHING
+ 
+&gt; (butfirst '(eight days a week))
+(DAYS A WEEK)
+ 
+&gt; (butfirst 910)
+10
+ 
+&gt; (butlast 'something)
+SOMETHIN
+ 
+&gt; (butlast '(eight days a week))
+(EIGHT DAYS A)
+ 
+&gt; (butlast 910)
+91
+</PRE> 
+ 
+<P>Notice that the <A NAME="g9"></A><CODE>first</CODE> of a sentence is a word, while the
+<CODE>first</CODE> of a word is a letter.  (But there's no separate data type
+called &quot;letter&quot;; a letter is the same as a one-letter word.)  The
+<A NAME="g10"></A><CODE>butfirst</CODE> of a sentence is a sentence, and the <CODE>butfirst</CODE> of a
+word is a word.  The corresponding rules hold for <A NAME="g11"></A><CODE>last</CODE> and
+<A NAME="g12"></A><CODE>butlast</CODE>.
+ 
+<P>The names <CODE>butfirst</CODE> and <CODE>butlast</CODE> aren't meant to describe ways to
+sled; they abbreviate &quot;all <CODE>but</CODE> the <CODE>first</CODE>&quot; and &quot;all <CODE>but</CODE> 
+the <CODE>last</CODE>.&quot;
+ 
+<P>You may be wondering why we're given ways to find the first and last
+elements but not the 42nd element.  It turns out that the ones we have are
+enough, since we can use these primitive selectors to define others:
+ 
+<P> 
+<PRE>(define (<A NAME="g13"></A>second thing)
+  (first (butfirst thing)))
+ 
+&gt; (second '(like dreamers do))
+DREAMERS
+ 
+&gt; (second 'michelle)
+I
+</PRE> 
+ 
+<P> 
+ 
+<P>There is, however, a primitive selector <CODE>item</CODE> that takes
+two arguments, a number <EM>n</EM> and a word or sentence, and returns the <EM>n</EM>th
+element of the second argument.
+ 
+<P> 
+<PRE>&gt; (item 4 '(being for the benefit of mister kite!))
+BENEFIT
+ 
+&gt; (item 4 'benefit)
+E
+</PRE> 
+ 
+ 
+<P>Don't forget that a sentence containing exactly one word is different from
+the word itself, and selectors operate on the two differently:
+ 
+<P> 
+<PRE>&gt; (first 'because)
+B
+ 
+&gt; (first '(because))
+BECAUSE
+</PRE> 
+ 
+<P> 
+<PRE>&gt; (butfirst 'because)
+ECAUSE
+ 
+<A NAME="g14"></A><A NAME="g15"></A>&gt; (butfirst '(because))
+()
+</PRE> 
+ 
+<P>The value of that last expression is the <EM>empty sentence.</EM>  You can tell it's a sentence because of the
+parentheses, and you can tell it's empty because there's nothing between
+them.
+ 
+<P><PRE>&gt; (butfirst 'a)
+&quot;"
+ 
+&gt; (butfirst 1024)
+&quot;024"
+</PRE> 
+ 
+<P>As these examples show, sometimes <CODE>butfirst</CODE> returns a word
+that has to have double-quote marks around it.  The first example
+shows the <EM><A NAME="g16"></A>empty word,</EM> while the second shows a number
+that's not in its ordinary form.  (Its numeric value is 24, but you don't
+usually see a zero in front.)
+ 
+<P><PRE>&gt; 024
+24
+ 
+&gt; &quot;024"
+&quot;024"
+</PRE> 
+ 
+<P>We're going to try to avoid printing these funny words.  But don't
+be surprised if you see one as the return value from one of the selectors
+for words.  (Notice that you don't have to put a single quote in front of
+the double quotes.  Strings are self-evaluating, just as numbers are.)
+<A NAME="g17"></A> 
+<A NAME="g18"></A> 
+<A NAME="g19"></A> 
+ 
+<P>Since <CODE>butfirst</CODE> and <CODE>butlast</CODE> are so hard to type, there are
+abbreviations <A NAME="g20"></A><CODE>bf</CODE> and <A NAME="g21"></A><CODE>bl</CODE>.  You can figure out which is which.

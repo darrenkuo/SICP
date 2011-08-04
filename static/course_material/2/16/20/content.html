@@ -1,0 +1,84 @@
+<P>We've been avoiding apostrophes in our words and sentences because
+they're abbreviations for the <CODE>quote</CODE> special form.  You must also avoid
+periods, commas, semicolons, quotation marks, vertical bars, and, of course,
+parentheses, since all of these have special meanings in Scheme.  You may,
+however, use question marks and exclamation points.
+ 
+<P>Although we've already mentioned the need to avoid names of primitives
+when choosing formal parameters, we want to remind you specifically about the
+names <CODE>word</CODE> and <CODE>sentence</CODE>.  These are often very tempting formal
+parameters, because many procedures have words or sentences as their
+domains.  Unfortunately, if you choose these names for parameters, you won't
+be able to use the corresponding procedures within your definition.
+ 
+<P><PRE>(define (plural word)                        ;; wrong!
+  (word word 's))
+ 
+&gt; (plural 'george)
+ERROR: GEORGE isn't a procedure
+</PRE> 
+ 
+<P>The result of substitution was not, as you might think,
+ 
+<P><PRE>(word 'george 's)
+</PRE> 
+ 
+<P>but rather
+ 
+<P><PRE>('george 'george 's)
+</PRE> 
+ 
+<P>We've been using <CODE>wd</CODE> and <CODE>sent</CODE> as formal parameters
+instead of <CODE>word</CODE> and <CODE>sentence</CODE>, and we recommend that practice.
+ 
+<P>There's a difference between a word and a single-word sentence.  For
+example, people often fall into the trap of thinking that the <CODE>butfirst</CODE> 
+of a two-word sentence such as <CODE>(sexy sadie)</CODE> is the second word, but it's
+not.  It's a one-word-long sentence.  For example, its <CODE>count</CODE> is one, not five.
+ 
+<P><PRE>&gt; (bf '(sexy sadie))
+(SADIE)
+ 
+&gt; (first (bf '(sexy sadie)))
+SADIE
+</PRE> 
+ 
+<P>We mentioned earlier that sometimes Scheme has to put double-quote marks
+around words.  Just ignore them; don't get upset if your procedure returns
+<CODE>&quot;6-of-hearts&quot;</CODE> instead of just <CODE>6-of-hearts</CODE>.
+ 
+<P><CODE>Quote</CODE> doesn't mean &quot;print.&quot; Some people look at interactions
+like this:
+ 
+<P><PRE>&gt; '(good night)
+(GOOD NIGHT)
+</PRE> 
+ 
+<P>and think that the quotation mark was an instruction telling
+Scheme to print what comes after it.  Actually, Scheme <EM>always</EM> prints
+the value of each expression you type, as part of the read-eval-print loop.
+In this case, the value of the entire expression is the subexpression that's
+being quoted, namely, the sentence <CODE>(good night)</CODE>.  That value wouldn't
+be printed if the quotation were part of some larger expression:
+ 
+<P><PRE>&gt; (bf '(good night))
+(NIGHT)
+</PRE> 
+ 
+<P>If you see an error message like
+ 
+<P><PRE>&gt; (+ 3 (bf 1075))
+ERROR: INVALID ARGUMENT TO +: &quot;075"
+</PRE> 
+ 
+<P>try entering the expression
+ 
+<P><PRE>&gt; (strings-are-numbers #t)
+OKAY
+</PRE> 
+ 
+<P>and try again.  (The extension to Scheme that allows arithmetic
+operations to work on nonstandard numbers like <CODE>&quot;075&quot;</CODE> makes ordinary
+arithmetic slower than usual.  So we've provided a way to turn the extension
+on and off.  Invoking <CODE>strings-are-numbers</CODE> with the argument <CODE>#f</CODE> turns off the extension.)
+ 

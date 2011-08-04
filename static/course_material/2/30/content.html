@@ -1,0 +1,46 @@
+<P>A <EM>variable</EM> is a connection between a name and a
+<A NAME="g1"></A> value. That sounds simple enough, but some complexities arise in practice.  To avoid confusion later, we'll spend some time now looking at the idea of &quot;variable&quot; in more detail.
+ 
+<P>The name <EM>variable</EM> comes from algebra.  Many people are introduced to
+variables in high school algebra classes, where the emphasis is on solving
+equations.  &quot;If <EM>x</EM><SUP>3</SUP>&minus;8=0, what is the value of <EM>x</EM>?&quot; In
+problems like these, although we call <EM>x</EM> a variable, it's really a <EM><A NAME="g2"></A><A NAME="g3"></A>named constant!</EM> In this particular problem, <EM>x</EM> has the
+value 2.  In any such problem, at first we don't know the value of <EM>x</EM>, but
+we understand that it does have some particular value, and that value isn't
+going to change in the middle of the problem.
+ 
+<P>In functional programming, what we mean by &quot;variable&quot; is like a named
+constant in mathematics.  Since a variable is the connection between a name
+and a value, a formal parameter in a procedure definition isn't a variable;
+it's just a name.  But when we invoke the procedure with a particular
+argument, that name is associated with a value, and a variable is created.
+If we invoke the procedure again, a <EM>new</EM> variable is created, perhaps
+with a different value.
+ 
+<P>There are two possible sources of confusion about this.  One is that you may
+have programmed before in a programming language like BASIC or Pascal, in
+which a variable often <EM>does</EM> get a new value, even after it's already
+had a previous value assigned to it.  Programs in those languages tend to be
+full of things like &quot;<CODE>X = X + 1</CODE>.&quot; Back in Chapter 2 we told
+you that this book is about something called
+&quot;<A NAME="g4"></A><A NAME="g5"></A>functional programming,&quot; but we haven't yet explained exactly
+what that means.  (Of course we <EM>have</EM> introduced a lot of functions,
+and that is an important part of it.)  Part of what we mean by functional
+programming is that once a variable exists, we aren't going to <EM>change</EM> the value of that variable.  
+ 
+<P>The other possible source of confusion is that in Scheme, unlike the
+situation in algebra, we may have more than one variable with the same name
+at the same time.  That's because we may invoke one procedure, and the body
+of that procedure may invoke another procedure, and each of them might use the
+same formal parameter name.  There might be one variable named <CODE>x</CODE> with
+the value 7, and another variable named <CODE>x</CODE> with the value 51, at the
+same time.  The pitfall to avoid is thinking &quot;<CODE>x</CODE> has changed its value
+from 7 to 51.&quot;
+ 
+<P>As an analogy, imagine that you are at a party along with Mick Jagger, Mick
+Wilson, Mick Avory, and Mick Dolenz.  If you're having a conversation with
+one of them, the name &quot;Mick&quot; means a particular person to you.  If you
+notice someone else talking with a different Mick, you wouldn't think &quot;Mick
+has become a different person.&quot; Instead, you'd think &quot;there are several
+people here all with the name Mick.&quot;
+ 

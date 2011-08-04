@@ -1,0 +1,78 @@
+<P>If you've programmed before in other languages, you may be accustomed
+to a style of programming in which you <EM>change</EM> the value of a
+variable by assigning it a new value.  You may be tempted to write
+ 
+<P><PRE>&gt; (define x (+ x 3))                         ;; no-no
+</PRE> 
+ 
+<P>Although some versions of Scheme do allow such redefinitions, so
+that you can correct errors in your procedures, they're not strictly legal.
+A definition is meant to be <EM>permanent</EM> in functional programming.
+(Scheme does include other mechanisms for non-functional programming, but
+we're not studying them in this book because once you allow reassignment you
+need a more complex model of the evaluation process.)
+ 
+<P>When you create more than one temporary variable at once using <CODE>let</CODE>, all of the expressions that provide the values are computed before any
+of the variables are created.  Therefore, you can't have one expression
+depend on another:
+ 
+<P><PRE>&gt; (let ((a (+ 4 7))                          ;; wrong!
+    (b (* a 5)))
+    (+ a b))
+</PRE> 
+ 
+<P>Don't think that <CODE>a</CODE> gets the value 11 and therefore <CODE>b</CODE> 
+gets the value 55.  That <CODE>let</CODE> expression is equivalent to defining a
+helper procedure
+ 
+<P><PRE>(define (helper a b)
+  (+ a b))
+</PRE> 
+ 
+<P>and then invoking it:
+ 
+<P><PRE>(helper (+ 4 7) (* a 5))
+</PRE> 
+ 
+<P>The argument expressions, as always, are evaluated <EM>before</EM> 
+the function is invoked.  The expression <CODE>(* a 5)</CODE> will be evaluated
+using the <EM>global</EM> value of <CODE>a</CODE>, if there is one.  If not, an
+error will result.  If you want to use <CODE>a</CODE> in computing <CODE>b</CODE>, you
+must say
+ 
+<P><PRE>&gt; (let ((a (+ 4 7)))
+    (let ((b (* a 5)))
+      (+ a b)))
+66
+</PRE> 
+ 
+<P><CODE>Let</CODE>'s notation is tricky because, like <CODE>cond</CODE>, it uses
+parentheses that don't mean procedure invocation.  Don't teach yourself magic
+formulas like &quot;two open parentheses before the <CODE>let</CODE> variable and three
+close parentheses at the end of its value.&quot; Instead, think about the
+overall structure:
+ 
+<P><PRE>(let variables body)
+</PRE> 
+ 
+<P><CODE>Let</CODE> takes exactly two arguments.  The first argument to <CODE>let</CODE> is one or more name-value groupings, all in parentheses:
+ 
+<P><PRE>((name1 value1) (name2 value2) (name3 value3) &hellip)
+</PRE> 
+ 
+<P>Each <CODE>name</CODE> is a single word; each <CODE>value</CODE> can be any
+expression, usually a procedure invocation.  If it's a procedure invocation,
+then parentheses are used with their usual meaning.
+ 
+<P>The second argument to <CODE>let</CODE> is the expression to be evaluated using
+those variables.
+ 
+<P>Now put all the pieces together:
+ 
+<P><PRE>(let <STRONG><BIG>((</BIG></STRONG>name1 (fn1 arg1)<STRONG><BIG>)</BIG></STRONG> 
+     <STRONG><BIG> (</BIG></STRONG>name2 (fn2 arg2)<STRONG><BIG>)</BIG></STRONG> 
+     <STRONG><BIG> (</BIG></STRONG>name3 (fn3 arg3)<STRONG><BIG>))</BIG></STRONG> 
+  body)
+</PRE> 
+ 
+<P> 

@@ -31,25 +31,41 @@ def checkReadable(lesson_data, user):
     func = eval('lambda time, user: %s' % (lesson_data['readable']))
     return func(time() * 1000, user)
 
-def checkAccessed(index, user):
+def checkAccessed(index, user, oldconn=None, oldcursor=None):
     print 'checking if user %s accessed page %s' % (user, index)
-    (conn, cursor) = getDbCursor(course_db)
+    if not oldconn or not oldcursor:
+        (conn, cursor) = getDbCursor(course_db)
+    else:
+        conn = oldconn
+        cursor = oldcursor
+
     cursor.execute('SELECT * from visits v where v.login = "%s" and v.chapter_id = "%s"' % (user, str(index)))
 
     rows = cursor.fetchall()
-    cursor.close()
+
+    if not oldconn:
+        cursor.close()
     
     return len(rows) == 1
 
+def checkSF(SF, user):
+    (conn, cursor) = getDbCursor(course_db)
+    cursor.execute('SELECT * from SPECIAL_FLAG where login = "%s" and SPECIAL_FLAG = "%s";' % (user, SF))
+    rows = cursor.fetchall()
+    return len(rows) >= 1
+
 def storeVisit(index, user):
-    if not checkAccessed(index, user):
+    (conn, cursor) = getDbCursor(course_db)
+    if not checkAccessed(index, user, conn, cursor):
         print "storing visit: %s just accessed page %s" % (user, index)
-        (conn, cursor) = getDbCursor(course_db)
         cursor.execute('INSERT into visits values("%s", "%s");' % (user, str(index)))
         conn.commit()
-        cursor.close()
     else:
         print "%s have already accessed page %s before" % (user, index)
+
+    cursor.execute('INSERT into visits_times values("%s", "%s", "%s");' % (user, str(index), str(int(time() * 1000))))
+    conn.commit()
+    cursor.close()    
 
 def convertToRealPath(path):
     return apply(join, path.split('-'))

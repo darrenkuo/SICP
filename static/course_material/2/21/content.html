@@ -1,0 +1,54 @@
+<P>We still need one more thing before we can write more interesting programs: 
+the ability to make decisions.  Scheme has a way to say &quot;if this is true,
+then do this thing, otherwise do something else.&quot;
+ 
+<P>Here's a procedure that greets a person:
+ 
+<P><PRE>(define (<A NAME="g63"></A>greet name)
+  (if (equal? (first name) 'professor)
+      (se '(i hope i am not bothering you) 'professor (last name))
+      (se '(good to see you) (first name))))
+ 
+&gt; (greet '(matt wright))
+(GOOD TO SEE YOU MATT)
+ 
+&gt; (greet '(professor harold abelson))
+(I HOPE I AM NOT BOTHERING YOU PROFESSOR ABELSON)
+</PRE> 
+ 
+<P>The program greets a person by checking to see if that person is a
+professor.  If so, it says, &quot;I hope I am not bothering you&quot; and then the
+professor's name.  But if it's a regular person, the program just says,
+&quot;Good to see you,&quot; and then the person's first name.
+ 
+<P><CODE>If</CODE> takes three arguments.  The first has to be either true or
+false.
+<A NAME="spif"></A> 
+<A NAME="g64"></A> 
+(We'll talk in a moment about exactly what true and false look like to
+Scheme.)  In the above example, the first word of the person's name might or
+might not be equal to the word &quot;Professor.&quot; The second and third arguments
+are expressions; one or the other of them is evaluated depending on the
+first argument.  The value of the entire <CODE>if</CODE> expression is the value of
+either the second or the third argument.
+ 
+<P> 
+You learned in Chapter 2 that Scheme includes a special data type
+called <EM>Booleans</EM> to represent true or false
+values.  There are just two of them: <A NAME="g65"></A><CODE>#t</CODE> for &quot;true&quot; and
+<A NAME="g66"></A><CODE>#f</CODE> for &quot;false.&quot;<A NAME="dumbfalse"></A>
+ 
+<P>We said that the first argument to <CODE>if</CODE> has to be true or false.  Of
+course, it would be silly to say
+ 
+<P> 
+ 
+<P><PRE>&gt; (if #t (+ 4 5) (* 2 7))
+9
+</PRE> 
+ 
+<P> 
+because what's the point of using <CODE>if</CODE> if we already know
+which branch will be followed?  Instead, as in the <CODE>greet</CODE> example, we call
+some procedure whose return value will be either true or false, depending on
+the particular arguments we give it.

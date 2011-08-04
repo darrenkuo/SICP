@@ -49,13 +49,15 @@ def getTableOfContent(lesson_data, path, user, level, page_path):
         
         page = '%s-%s' % (page_path, c)
         if page_path == '':
-            page = str(c[0])
+            page = str(c)
 
         o = getTableOfContent(data, join(path, c), user,
                               level + 1, page)
 
         if o:
             components.append(o)
+            if level == 0:
+                components.append(Br())
 
     if level == 0:
         return ol('', components)

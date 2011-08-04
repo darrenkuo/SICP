@@ -1,0 +1,156 @@
+<div class="p"><!----></div>
+This lab introduces a new special form, <tt>lambda</tt>.
+
+<div class="p"><!----></div>
+1.  Type each of the following into Scheme, and note the results.  See when
+you can <i>predict </i> the results before letting Scheme do the computation.
+
+<div class="p"><!----></div>
+<tt>  <pre>(lambda (x) (+ x 3))
+
+<div class="p"><!----></div>
+((lambda (x) (+ x 3)<!--hbox-->00 7)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+You can think of <tt>lambda</tt> as meaning "the function of...," e.g.,
+"the function of <tt>x</tt> that returns <tt>(+ x 3)</tt>.
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (make-adder num)
+  (lambda (x) (+ x num)))
+
+<div class="p"><!----></div>
+((make-adder 3)<!--hbox-->00 7)
+
+<div class="p"><!----></div>
+(define plus3 (make-adder 3))
+
+<div class="p"><!----></div>
+(plus3 7)
+
+<div class="p"><!----></div>
+(define (square x) (* x x))
+
+<div class="p"><!----></div>
+(square 5)
+
+<div class="p"><!----></div>
+(define sq (lambda (x) (* x x))<!--hbox-->00)
+
+<div class="p"><!----></div>
+(sq 5)
+
+<div class="p"><!----></div>
+(define (try f) (f 3 5))
+
+<div class="p"><!----></div>
+(try +)
+
+<div class="p"><!----></div>
+(try word)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+
+2.  Write a procedure <tt>substitute</tt> that takes three arguments:&nbsp;a
+sentence, an <i>old </i> word, and a <i>new </i> word.  It should return
+a copy of the sentence, but with every occurrence of the old word
+replaced by the new word.  For example:
+
+<div class="p"><!----></div>
+<tt>  <pre>&#62; (substitute '(she loves you yeah yeah yeah) 'yeah 'maybe)
+(she loves you maybe maybe maybe)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+<br />3.  Consider a Scheme function <tt>g</tt> for which the expression
+
+<div class="p"><!----></div>
+<tt>  <pre>((g) 1)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+ returns the value 3 when evaluated.  Determine how many
+arguments <tt>g</tt> has.  In one word, also describe as best you can
+the <i>type </i> of value returned by <tt>g</tt>.
+
+<div class="p"><!----></div>
+<br />4.  For each of the following expressions, what must <tt>f</tt> be in order for
+the evaluation of the expression to succeed, without causing an error?  For
+each expression, give a definition of <tt>f</tt> such that evaluating the
+expression will not cause an error, and say what the expression's value will
+be, given your definition.
+
+<div class="p"><!----></div>
+<tt>  <pre>f
+(f)
+(f 3)
+((f))
+(((f)) 3)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+<br />5.  Find the values of the expressions
+
+<div class="p"><!----></div>
+<tt>  <pre>((t 1+) 0)((t (t 1+)) 0)(((t t) 1+) 0)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+where <tt>1+</tt> is a primitive procedure that adds 1 to its argument, and
+<tt>t</tt> is defined as follows:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (t f)
+  (lambda (x) (f (f (f x)))) )
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Work this out yourself before you try it on the computer!
+
+<div class="p"><!----></div>
+<br />6.  Find the values of the expressions
+
+<div class="p"><!----></div>
+<tt>  <pre>((t s) 0)((t (t s)) 0)(((t t) s) 0)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+where <tt>t</tt> is defined as in question 2 above, and <tt>s</tt> is defined as
+follows:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (s x)
+  (+ 1 x))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+<br />
+<div class="p"><!----></div>
+7. Write and test the <tt>make-tester</tt> procedure.
+Given a word <tt>w</tt> as argument, <tt>make-tester</tt> returns a procedure
+of one argument <tt>x</tt> that returns true if <tt>x</tt> is equal to <tt>w</tt>
+and false otherwise. Examples:
+
+<div class="p"><!----></div>
+<tt>  <pre>&#62; ((make-tester 'hal) 'hal)
+#t
+&#62; ((make-tester 'hal) 'cs61a)
+#f
+&#62; (define sicp-author-and-astronomer? (make-tester 'gerry))
+&#62; (sicp-author-and-astronomer? 'hal)
+#f
+&#62; (sicp-author-and-astronomer? 'gerry)
+#t
+
+</pre></tt>

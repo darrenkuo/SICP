@@ -1,0 +1,53 @@
+<P>The biggest pitfall in this chapter is the unusual notation of <CODE>cond</CODE>.  Keeping track of the parentheses that mean function invocation, as
+usual, and the parentheses that just group the parts of a <CODE>cond</CODE> clause
+is tricky until you get accustomed to it.
+ 
+<P>Many people also have trouble with the asymmetry of the <A NAME="g110"></A><CODE>member?</CODE> 
+predicate.  The first argument is something small; the second is something
+big.  (The order of arguments is the same as the order of a typical English
+sentence about membership:  &quot;Is Mick a member of the Beatles?&quot;)
+It seems pretty obvious when you look at an example in which both
+arguments are quoted constant values, but you can get in trouble when you
+define a procedure and use its parameters as the arguments to <CODE>member?</CODE>.
+Compare writing a procedure that says, &quot;does the letter E appear in this
+word?&quot; with one that says, &quot;is this letter a vowel?&quot;
+ 
+<P>Many people try to use <CODE>and</CODE> and <CODE>or</CODE> with the full flexibility
+of the corresponding English words.  Alas, Scheme is not English.  For
+example, suppose you want to know whether the argument to a procedure is
+either the word <CODE>yes</CODE> or the word <CODE>no</CODE>.  You can't say
+ 
+<P> 
+<PRE>(equal? argument (or 'yes 'no))              ; wrong!
+</PRE> 
+ 
+<P>This sounds promising:  &quot;Is the <CODE>argument</CODE> <CODE>equal</CODE> to
+the word <CODE>yes</CODE> <CODE>or</CODE> the word <CODE>no</CODE>?&quot; But the arguments to <CODE>or</CODE> must be true-or-false values, not things you want to check for equality
+with something else.  You have to make two separate equality tests:
+ 
+<P><PRE>(or (equal? argument 'yes) (equal? argument 'no))
+</PRE> 
+ 
+<P>In this particular case, you could also solve the problem by saying
+ 
+<P><PRE>(member? argument '(yes no))
+</PRE> 
+ 
+<P>but the question of trying to use <CODE>or</CODE> as if it were English
+comes up in other cases for which <CODE>member?</CODE> won't help.
+ 
+<P>This isn't exactly a pitfall, because it won't stop your program from
+working, but programs like
+ 
+<P><PRE>(define (odd? n)
+  (if (not (even? n)) #t #f))
+</PRE> 
+ 
+<P>are redundant.  Instead, you could just say
+ 
+<P><PRE>(define (odd? n)
+  (not (even? n)))
+</PRE> 
+ 
+<P>since the value of <CODE>(not (even? n))</CODE> is already <CODE>#t</CODE> or
+<CODE>#f</CODE>.

@@ -22,6 +22,13 @@ def getCourseTree(path='.'):
 
     return ol('', components)
 
+def getSFPairList():
+    pair_list = [('SF_PROGRAMMED', 'Has programmed'),
+                 ('SF_SCHEME', 'Know Scheme'),
+                 ('SF_RECURSION', 'Know Recursion'),]
+    return pair_list
+    
+
 def getCoursePairList(path='.'):
     components = []
     data = readLessonData(path)
@@ -34,12 +41,10 @@ def getCoursePairList(path='.'):
 
 def new_page_form():
     def enable_script(ID):
-        enable = "document.getElementById('%s%s').disabled= !document.getElementById('%s%s').disabled;"
-        return '%s%s%s' % (enable % (ID, 'Year', ID, 'Year'),
-                           enable % (ID, 'Month', ID, 'Month'),
-                           enable % (ID, 'Day', ID, 'Day'))
+        enable = "document.getElementById('%s').disabled= !document.getElementById('%s').disabled;"
+        return '%s' % (enable % (ID, ID))
 
-    components = [js(script='function enable_dateselector(id) {%s}' % (enable_script('\'+id+\''))),
+    components = [js(script='function enable_weekselector(id) {%s}' % (enable_script('\'+id+\''))),
                   Label(text='Title:'),
                   form.Textbox(name='title', value='', size="50"),
                   Br(2),
@@ -47,14 +52,18 @@ def new_page_form():
                   Br(),
                   Checklist('pages', dict(getCoursePairList())),
                   Br(2),
+                  Checklist('sf', dict(getSFPairList())),
+                  Br(2),
                   Label(text='Date constaints'),
                   Br(),
                   Table([[Label(text='Before:'),
-                          form.Checkbox('before_check', onchange="enable_dateselector('before_date')"),
-                          DateSelector(name="before_date", disable="true")],
+                          form.Checkbox('before_check', onchange="enable_weekselector('before_week')"),
+                          #DateSelector(name="before_date", disable="true")],
+                          WeekSelector(name="before_week", disabled="true")],
                          [Label(text='After:'),
-                          form.Checkbox('after_check', onchange='enable_dateselector("after_date")'),
-                          DateSelector(name="after_date", disable="true")]]),
+                          form.Checkbox('after_check', onchange='enable_weekselector("after_week")'),
+                          #DateSelector(name="after_date", disable="true")]]),
+                          WeekSelector(name="after_week", disabled="true")]]),
                   Br(),
                   ScriptButton("Generate code", "generateConstraints()"),
                   Br(2),
@@ -102,23 +111,36 @@ def make_new_page(data):
     f.close()
 
 # edit page
-def make_edit_page(page):
+def edit_page_form(page):
+    def enable_script(ID):
+        enable = "document.getElementById('%s').disabled= !document.getElementById('%s').disabled;"
+        return '%s' % (enable % (ID, ID))
+
     # TODO: enter in values
     data = readLessonData(page)
-    components = [Label(text='Title:'),
+    components = [js(script='function enable_weekselector(id) {%s}' % (enable_script('\'+id+\''))),
+                  Label(text='Title:'),
                   form.Textbox(name='title', value=data['title'], 
                                size="50"),
                   Br(2),
                   Label(text='List of pages completed'),
                   Br(),
-                  Checklist('pages', dict(getCoursePairList())),
+                  Checklist('pages', dict(getCoursePairList()), code=data['readable']),
+                  Br(2),
+                  Label(text="Special flags"),
+                  Br(),
+                  Checklist('sf', dict(getSFPairList())),
                   Br(2),
                   Label(text='Date constaints'),
                   Br(),
                   Table([[Label(text='Before:'),
-                          DateSelector(name="before_date")],
+                          form.Checkbox('before_check', onchange="enable_weekselector('before_week')"),
+                          #DateSelector(name="before_date", disable="true")],
+                          WeekSelector(name="before_week", disabled="true")],
                          [Label(text='After:'),
-                          DateSelector(name="after_date")]]),
+                          form.Checkbox('after_check', onchange='enable_weekselector("after_week")'),
+                          #DateSelector(name="after_date", disable="true")]]),
+                          WeekSelector(name="after_week", disabled="true")]]),
                   Br(),
                   ScriptButton("Generate code", "generateConstraints()"),
                   Br(2),
@@ -126,14 +148,28 @@ def make_edit_page(page):
                   Br(),
                   Label(text='lambda time, userID: '),
                   Br(),
-                  form.Textarea(name='advance', value='', rows="8",
+                  form.Textarea(name='advance', rows="8",
                                 cols="100", 
-                                style="resize:none, overflow:auto"),
+                                style="resize:none, overflow:auto",
+                                value=data['readable']),
+                  Br(2),
+                  Label(text='Page type:'),
+                  form.Dropdown(name='page_type', args=['quiz', 'lesson']),
                   Br(2),
                   ScriptButton("Create", "checkAdvance();")
                   ]
     
     return div('', components)
+
+def process_edit_page(data):
+    (title, path, code, page_type) = (data['title'], data['page'], data['code'], data['type'])
+
+    ID = path.split('/')[-1]
+    lesson_data = readLessonData(path)
+    lesson_data['title'] = title
+    lesson_data['readable'] = code
+    lesson_data['type'] = page_type
+    writeLessonData(path, lesson_data)
 
 def getAdminPage():
     return sidebar_css(), lesson_layout(content=unreadable_content())

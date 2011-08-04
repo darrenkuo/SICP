@@ -18,15 +18,41 @@ $def with(object, path)
 	   result += " and checkAccessed(" + pages.children[i].id + ", user)";
         }
     }
+    var sf = document.getElementById('sf');
+    for (i = 0; i < sf.children.length; i++) {
+        if (sf.children[i].nodeName != "INPUT")
+	   continue;
+	if (sf.children[i].checked == true) {
+	   result += " and checkSF(" + sf.children[i].id + ", user)";
+        }
+    }
 
+    /*
     var dateString1 = getDateString("before_date");
     var dateString2 = getDateString("after_date");
     var date1 = new Date(dateString1);
     var date2 = new Date(dateString2);
     if (document.getElementById("before_check_").checked)
        result += " and (time < " + date1.getTime() + ")";
-    if (document.getElementById("after_check_").checked)
+    if (document.getElementById("after_check_").checked) {
        result += " and (time > " + date2.getTime() + ")";
+    }
+    */
+    var beforeWeek = null;
+    if (document.getElementById('before_check_').checked) {
+       var obj = document.getElementById("before_week");
+       beforeWeek = obj.options[obj.selectedIndex].value;
+       result += " and (time < " + beforeWeek + ")";
+    }
+
+    var afterWeek = null;
+    if (document.getElementById('after_check_').checked) {
+       var obj = document.getElementById("after_week");
+       afterWeek = obj.options[obj.selectedIndex].value;
+       result += " and (time > " + afterWeek + ")";
+    }
+
+    
     document.getElementById('advance').value = result;
   }
 
@@ -36,6 +62,7 @@ $def with(object, path)
     }
     post_to_url("/new_page", {'title' : document.getElementById('title').value, 'code' : document.getElementById('advance').value, 'page' : '$:path', 'type' : document.getElementById('page_type').value});
   }
+
   function post_to_url(path, params, method) {
     method = method || "post"; // Set method to post by default, if not specified.
 

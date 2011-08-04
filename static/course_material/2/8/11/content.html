@@ -1,0 +1,81 @@
+<P><P><A NAME="alice"></A> 
+<BLOCKQUOTE> 
+ 
+<P>&quot;It's long,&quot; said the Knight, &quot;but it's very, <EM>very</EM> beautiful.
+Everybody that hears me sing it&mdash;either it brings the <EM>tears</EM> into
+their eyes, or else&mdash;&quot;
+ 
+<P>&quot;Or else what?&quot; said Alice, for the Knight had made a sudden pause.
+ 
+<P>&ldquo;Or else it doesn't, you know.  The name of the song is called &lsquo;<EM>Haddock's Eyes.</EM>&rsquo;&thinsp;&rdquo;
+ 
+<P>&quot;Oh, that's the name of the song, is it?&quot; Alice said, trying to feel
+interested.
+ 
+<P>&quot;No, you don't understand,&quot; the Knight said, looking a little vexed.
+&ldquo;That's what the name is <EM>called.</EM> The name really is &lsquo;<EM>The Aged
+Aged Man.</EM>&rsquo&thinsp;&rdquo;
+ 
+<P>&ldquo;Then I ought to have said &lsquo;That's what the <EM>song</EM> is called&rsquo;?&rdquo; 
+Alice corrected herself.
+ 
+<P>&ldquo;No, you oughtn't; that's quite another thing!  The <EM>song</EM> is called
+&lsquo<EM>Ways And Means</EM>&rsquo: but that's only what it's <EM>called,</EM> you
+know!&rdquo;
+ 
+<P>&quot;Well, what <EM>is</EM> the song, then?&quot; said Alice, who was by this time
+completely bewildered.
+ 
+<P>&quot;I was coming to that,&quot; the Knight said.  &ldquo;The song really is &lsquo<EM>A-sitting On A Gate</EM>&rsquo;: and the tune's my own invention.&rdquo;
+ 
+<P><A NAME="g7"></A>Lewis Carroll, <EM>Through the Looking-Glass, and What
+Alice Found There</EM> 
+ 
+<P></BLOCKQUOTE><P> 
+Notice that when we <EM>defined</EM> the <CODE>square</CODE> procedure we gave a <EM>name,</EM> <CODE>x</CODE>, for its argument.  By contrast, when we <EM>invoked</EM> 
+<CODE>square</CODE> we provided a <EM>value</EM> for the argument (e.g., <CODE>7</CODE>).
+The word <CODE>x</CODE> is a &quot;place holder&quot; in the definition that stands for
+whatever value you use when you call the procedure.  So you can read the
+definition of <CODE>square</CODE> as saying, &quot;In order to <CODE>square</CODE> a number,
+multiply <EM>that number</EM> by <EM>that number.</EM>&quot; The name <CODE>x</CODE> 
+holds the place of the particular number that you mean.
+ 
+<P>Be sure you understand this distinction between defining a procedure and
+calling it.  A procedure represents a general technique that can be applied
+to many specific cases.  We don't want to build any particular case into the
+procedure definition; we want the definition to express the general nature of
+the technique.  You wouldn't want a procedure that only knew how to take the
+square of 7.  But when you actually get around to using <CODE>square</CODE>, you have
+to be specific about which number you're squaring.
+ 
+<P>The name for the name of an argument (whew!) is <EM><A NAME="g8"></A><A NAME="g9"></A>formal parameter.</EM> In our <CODE>square</CODE> example, <CODE>x</CODE> 
+is the formal parameter.  (You may hear people say either &quot;formal&quot;
+alone or &quot;parameter&quot; alone when they're feeling lazy.)  The
+technical term for the actual value of the argument is the <EM><A NAME="g10"></A><A NAME="g11"></A>actual argument.</EM> In a case like
+ 
+<P> 
+<PRE>(square (+ 5 9))
+</PRE> 
+ 
+ 
+<P> 
+you may want to distinguish the <EM><A NAME="g12"></A><A NAME="g13"></A>actual argument expression</EM> <CODE>(+ 5 9)</CODE> from the <EM><A NAME="g14"></A><A NAME="g15"></A>actual argument value</EM> 14.  Most of the time it's perfectly clear
+what you mean, and you just say &quot;argument&quot; for all of these things, but
+right now when you're learning these ideas it's important to be able to talk
+more precisely.
+ 
+<P> 
+The <CODE>square</CODE> procedure takes one argument.  If a procedure requires more
+than one argument, then the question arises, which actual argument goes with
+which formal parameter?  The answer is that they go in the order in which
+you write them, like this:
+ 
+<P><PRE>(define (f a b)
+  (+ (* 3 a) b))
+ 
+&gt; (f 5 8)
+23
+ 
+&gt; (f 8 5)
+29
+</PRE> 

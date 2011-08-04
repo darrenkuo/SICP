@@ -1,0 +1,73 @@
+<P>We started out, in Part I, with examples about acronyms and so on, but since
+then we've been working with numbery old numbers.  That's because the
+discussions about evaluation and procedure definition were complicated
+enough without introducing extra ideas at the same time.  But now we're
+ready to get back to symbolic programming.
+ 
+<P>As we mentioned in Chapter 3, everything that you type into Scheme is
+evaluated and the resulting value is printed out.  Let's say you want to use
+&quot;square&quot; as a word in your program.  For example, you want your program to
+solve the problem, &quot;Give me an adjective that describes
+<A NAME="g1"></A>Barry Manilow.&quot; If you just type <CODE>square</CODE> into Scheme, you
+will find out that <CODE>square</CODE> is a procedure:
+ 
+<P><PRE>&gt; square
+#&lt;PROCEDURE>
+</PRE> 
+ 
+<P>(Different versions of Scheme will have different ways of printing
+out procedures.)
+ 
+<P>What you need is a way to say that you want to use the word &quot;<CODE>square</CODE>&quot;
+<EM>itself,</EM> rather than the <EM>value</EM> of that word, as an
+expression.  The way to do this is to use <A NAME="g2"></A><CODE>quote</CODE>:
+<A NAME="spquote"></A> 
+ 
+<P><PRE>&gt; (quote square)
+SQUARE
+ 
+&gt; (quote (tomorrow never knows))
+(TOMORROW NEVER KNOWS)
+ 
+&gt; (quote (things we said today))
+(THINGS WE SAID TODAY)
+</PRE> 
+ 
+<P><CODE>Quote</CODE> is a <A NAME="g3"></A><A NAME="g4"></A>special form, since its argument isn't evaluated.
+Instead, it just returns the argument as is.
+ 
+<P>Scheme programmers use <CODE>quote</CODE> a lot, so there is an abbreviation for it:
+ 
+<P><PRE>&gt; 'square
+SQUARE
+ 
+&gt; '(old brown shoe)
+(old brown shoe)
+</PRE> 
+ 
+<P>(Since Scheme uses the apostrophe as an abbreviation for <CODE><A NAME="g5"></A> 
+quote</CODE>, you can't use one as an ordinary punctuation mark in a sentence.
+That's why we've been avoiding titles like <CODE>(can't buy me love)</CODE>.
+To Scheme this would mean <CODE>(can (quote t) buy me
+love)</CODE>!)
+ 
+<P>This idea of quoting, although it may seem arbitrary in the context of
+computer programming, is actually quite familiar from ordinary English.
+What is a book?  It's a bunch of pieces of paper, with printing on them,
+bound together.  What is &quot;a book&quot;?  It's a noun phrase, made up of an article
+and a noun.  See?  Similarly, what's 2+3?  It's five.  What's &quot;2+3&quot;?
+It's an arithmetic formula.  When you see words inside quotation marks, you
+understand that you're supposed to think about the words themselves; you
+don't evaluate what they mean.  Scheme is the same way.
+ 
+<P>(It's no accident that kids who make jokes like
+ 
+<P><P><BLOCKQUOTE>Matt:  &quot;Say your name.&quot;
+ 
+<P>Brian:  &quot;Your name.&quot;
+ 
+<P></BLOCKQUOTE> 
+ 
+<P><P>grow up to be computer programmers.  The difference between a
+thing and its name is one of the important ideas that programmers need to
+understand.)

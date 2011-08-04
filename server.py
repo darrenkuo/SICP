@@ -96,8 +96,12 @@ class edit_page:
             raise web.seeother('/admin_login')
 
         data = web.input()
+        if 'page' in data and 'title' in data and 'code' in data:
+            process_edit_page(data)
+            raise web.seeother('/course_control')
+
         edit_page = edit_page_form(data['page'])
-        return render.edit_page(edit_page)
+        return render.edit_page(edit_page, data['page'])
 
     def POST(self):
         return self.GET()
@@ -132,5 +136,10 @@ if __name__ == "__main__":
         print "Creating database folder"
         mkdir('dbs')
         setup_dbs()
-
+        
+    if not exists('requests'):
+        mkdir('requests')
+        mkdir('requests/quiz')
+        mkdir('requests/admin')
+        
     app.run()

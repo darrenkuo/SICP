@@ -1,0 +1,1 @@
+{'index': 30, 'readable': u'True and checkAccessed(1, user) and checkAccessed(2, user) and checkAccessed(3, user) and checkAccessed(8, user) and checkAccessed(16, user) and checkAccessed(21, user) and (not checkSF(SF_SCHEME, user))', 'type': u'lesson', 'chapters': ['31', '32', '33', '34', '35'], 'title': u'Variables'}

@@ -1,0 +1,77 @@
+<P>One of the biggest problems that beginning Lisp programmers have comes
+from trying to read a program from left to right, rather than thinking about
+it in terms of expressions and subexpressions.  For example,
+ 
+<P><PRE>(square (cos 3))
+</PRE> 
+ 
+<P><EM>doesn't</EM> mean &quot;square three, then take the cosine of
+the answer you get.&quot; Instead, as you know, it means that the argument to
+<CODE>square</CODE> is the return value from <CODE>(cos 3)</CODE>.
+ 
+<P>Another big problem that people have is thinking that Scheme cares
+about the spaces, tabs, line breaks, and other &quot;white space&quot; in their
+Scheme programs.  We've been indenting our expressions to illustrate the way
+that subexpressions line up underneath each other.  But to Scheme,
+<A NAME="g16"></A> 
+ 
+<P><PRE>(+ (* 2 (/ 14 7) 3) (/ (* (- (* 3 5) 3) (+ 1
+1)) (- (* 4 3) (* 3 2))) (- 15 18))
+</PRE> 
+ 
+<P>means the same thing as
+ 
+<P><PRE>(+ (* 2 (/ 14 7) 3)
+   (/ (* (- (* 3 5) 3) (+ 1 1))
+      (- (* 4 3) (* 3 2)))
+   (- 15 18))
+</PRE> 
+ 
+<P>So in this expression:
+ 
+<P><PRE>(+ (* 3 (sqrt 49)                            ;; weirdly formatted
+   (/ 12 4)))
+</PRE> 
+ 
+<P>there aren't two arguments to <CODE>+</CODE>, even though it looks that
+way if you think about the indenting.  What Scheme does is look at the
+parentheses, and if you examine these carefully, you'll see that there are
+three arguments to <CODE>*</CODE>: the atom <CODE>3</CODE>, the compound expression <CODE>(sqrt 49)</CODE>, and the compound expression <CODE>(/ 12 4)</CODE>.  (And there's only one
+argument to <CODE>+</CODE>.)
+ 
+<P>A consequence of Scheme's not caring about white space is that when you
+hit the return key, Scheme might not do anything.  If you're in the middle
+of an expression, Scheme waits until you're done typing the entire thing
+before it evaluates what you've typed.  This is fine if your program is
+correct, but if you type this in:
+ 
+<P><PRE>(+ (* 3 4)
+   (/ 8 2)                              ; note missing right paren
+</PRE> 
+ 
+<P>then <EM>nothing</EM> will happen.  Even if you type forever, until
+you close the open parenthesis next to the <CODE>+</CODE> sign, Scheme will still
+be reading an expression.  So if Scheme seems to be ignoring you, try typing
+a zillion close parentheses.  (You'll probably get an error message about
+too many parentheses, but after that, Scheme should start paying attention
+again.)
+ 
+<P>You might get into the same sort of trouble if you have a double-quote
+mark (<CODE>&quot;</CODE>) in your program.  Everything inside a pair of quotation marks
+is treated as one single <EM>string.</EM> We'll explain more about
+strings later.  For now, if your program has a stray quotation mark, like
+this:
+ 
+<P><PRE>(+ (* 3 &quot; 4)                            ; note extra quote mark
+   (/ 8 2))
+</PRE> 
+ 
+<P>then you can get into the same predicament of typing and having
+Scheme ignore you.  (Once you type the second quotation mark, you may still
+need some close parentheses, since the ones you type inside a string
+don't count.)
+ 
+<P>One other way that Scheme might seem to be ignoring you comes from the
+fact that you don't get a new Scheme prompt until you type in an expression
+and it's evaluated.  So if you just hit the <CODE>return</CODE> or <CODE>enter</CODE> key
+without typing anything, most versions of Scheme won't print a new prompt.

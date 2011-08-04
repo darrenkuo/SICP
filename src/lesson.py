@@ -23,8 +23,6 @@ def getLesson(user, page=''):
     html_code = f.read().strip().split('\n')
     f.close()
     
-    storeVisit(data['index'], user)
-    
     html = ''
     for line in html_code:
         obj = match('^###([\s\S]+)###', line)
@@ -33,6 +31,11 @@ def getLesson(user, page=''):
                         join(course_material, path, obj.groups()[0]), 'r')))
         else:
             html += '%s\n' % (line)
+    
+    html = str(html.replace('###content_dir###', join(course_material, path)))
+
+    print html
+    print type(html)
 
     return sidebar_css(), lesson_layout(content=lesson_content(title=data['title'], 
                                                          content=html, path=page))

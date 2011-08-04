@@ -1,0 +1,75 @@
+<P><A NAME="g6"></A> You can understand variables in terms of the
+little-people model.  A variable, in this model, is the association in the
+little person's mind between a formal parameter (name) and the actual
+argument (value) she was given.  When we want to know <CODE>(square 5)</CODE>, we
+hire Srini and tell him his argument is 5.  Srini therefore substitutes 5
+for <CODE>x</CODE> in the body of <CODE>square</CODE>.  Later, when we want to know the
+square of 6, we hire Samantha and tell her that her argument is 6.  Srini and
+Samantha have two different variables, both named <CODE>x</CODE>.
+ 
+<P><A NAME="srini"></A> 
+<CENTER><IMG SRC="###content_dir###/srini.jpg" ALT="figure: srini"></CENTER> 
+ 
+<P>Srini and Samantha do their work separately, one after the other.  But
+in a more complicated example, there could even be more than
+one value called <CODE>x</CODE> at the same time:
+ 
+<P><PRE>(define (square x) (* x x))
+ 
+(define (<A NAME="g7"></A>hypotenuse x y)
+  (sqrt (+ (square x) (square y))))
+ 
+&gt; (hypotenuse 3 4)
+5
+</PRE> 
+ 
+<P>Consider the situation when we've hired Hortense to evaluate that
+expression.  Hortense associates the name <CODE>x</CODE> with the value 3 (and also
+the name <CODE>y</CODE> with the value 4, but we're going to pay attention to <CODE>x</CODE>).  She has to compute two <CODE>square</CODE>s.  She hires Solomon to compute
+<CODE>(square 3)</CODE>.  Solomon associates the name <CODE>x</CODE> with the value 3.
+This happens to be the same as Hortense's value, but it's still a separate
+variable that could have had a different value&mdash;as we see when Hortense
+hires Sheba to compute <CODE>(square 4)</CODE>.  Now, simultaneously, Hortense
+thinks <CODE>x</CODE> is 3 and Sheba thinks <CODE>x</CODE> is 4.
+ 
+<P><A NAME="sheba"></A> 
+<CENTER><IMG SRC="###content_dir###/hortense.jpg" ALT="figure: hortense"></CENTER> 
+ 
+<P>(Remember that we said a variable is a connection between a name and a
+value.  So <CODE>x</CODE> isn't a variable!  The association of the name <CODE>x</CODE> 
+with the value 5 is a variable.  The reason we're being so fussy about this
+terminology is that it helps clarify the case in which several variables
+have the same name.  But in practice people are generally sloppy about this
+fine point; we can usually get away with saying &quot;<CODE>x</CODE> is a variable&quot;
+when we mean &quot;there is some variable whose name is <CODE>x</CODE>.&quot;)
+ 
+<P>Another important point about the way little people do variables is that
+they can't read each others' minds.  In particular, they don't know about
+the values of the local variables that belong to the little people who
+hired them.  For example, the following attempt to compute the value 10
+won't work:
+ 
+<P><PRE>(define (f x)
+  (g 6))
+ 
+(define (g y)
+  (+ x y))
+ 
+&gt; (f 4)
+ERROR - VARIABLE X IS UNBOUND.
+</PRE> 
+ 
+<P>We hire Franz to compute <CODE>(f 4)</CODE>.  He associates <CODE>x</CODE> with
+4 and evaluates <CODE>(g 6)</CODE> by hiring Gloria.  Gloria associates <CODE>y</CODE> 
+with 6, but she doesn't have any value for <CODE>x</CODE>, so she's in trouble.
+The solution is for Franz to tell Gloria that <CODE>x</CODE> is <CODE>4</CODE>:
+ 
+<P><PRE>(define (f x)
+  (g x 6))
+ 
+(define (g x y)
+  (+ x y))
+ 
+&gt; (f 4)
+10
+</PRE> 

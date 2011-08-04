@@ -1,0 +1,66 @@
+<P>The interaction between you and Scheme is called the
+&quot;read-eval-print loop.&quot; Scheme reads what you type, <EM>evaluates</EM> 
+it, and prints the answer, and then does the same thing over again.  We're
+emphasizing the word &quot;evaluates&quot; because the essence of understanding
+Scheme is knowing what it means to evaluate something.
+ 
+<P>Each question you type is called an <EM>expression.</EM> The
+expression can be a single value, such as <CODE>26</CODE>, or something more
+complicated in parentheses, such as <CODE>(+ 14 7)</CODE>.  The first kind of
+expression is called an <EM>atom</EM> (or <EM><A NAME="g1"></A><A NAME="g2"></A>atomic expression</EM>), while the second kind of expression is
+called a <EM><A NAME="g3"></A><A NAME="g4"></A>compound expression,</EM> because it's made out of the
+smaller expressions <CODE>+</CODE>, <CODE>14</CODE>, and <CODE>7</CODE>.  The metaphor is from
+chemistry, where atoms of single elements are combined to form chemical
+compounds.  We sometimes call the expressions within a compound expression
+its <EM>subexpressions.</EM> 
+ 
+<P>Compound expressions tell Scheme to &quot;do&quot; a procedure.  This idea is so
+important that it has a lot of names.  You can <EM>call</EM> a procedure; you
+can <EM>invoke</EM> a procedure; or you can <EM>apply</EM> a procedure to some
+numbers or other values.  All of these mean the same thing.
+ 
+<P>If you've programmed before in some other language, you're probably
+accustomed to the idea of several different types of statements for
+different purposes.  For example, a &quot;print statement&quot; may look very
+different from an &quot;assignment statement.&quot; In Scheme, everything is done by
+calling procedures, just as we've been doing here.  Whatever you want to do,
+there's only one notation: the compound expression.
+ 
+<P>Notice that we said a compound expression contains expressions.  This means
+that you can't understand what an expression is until you already understand
+what an expression is.  This sort of circularity comes up again and again
+and again and again in Scheme programming.  How do
+you ever get a handle on this self-referential idea?  The secret is that
+there has to be some simple kind of expression that <EM>doesn't</EM> have
+smaller expressions inside it&mdash;the atomic expressions.
+ 
+<P>It's easy to understand an expression that just contains one number.
+Numbers are <EM>self-evaluating;</EM> that is, when you evaluate a
+<A NAME="g5"></A> 
+<A NAME="g6"></A> 
+number, you just get the same number back.
+ 
+<P>Once you understand <EM>numbers,</EM> you can understand <EM>expressions
+that add up</EM> numbers.  And once you understand <EM>those</EM> expressions,
+you can use that knowledge to figure out <EM>expressions that add up</EM> 
+expressions-that-add-up-numbers.  Then  and so on.  In practice, you
+don't usually think about all these levels of complexity separately.  You
+just think, &quot;I know what a number is, and I know what it means to add up
+<EM>any</EM> expressions.&quot;
+ 
+<P> 
+So, for example, to understand the expression
+ 
+<P><PRE>(+ (+ 2 3) (+ 4 5))
+</PRE> 
+ 
+<P>you must first understand <CODE>2</CODE> and <CODE>3</CODE> as self-evaluating
+numbers, then understand <CODE>(+ 2 3)</CODE> as an expression that adds those
+numbers, then understand how the sum, 5, contributes to the overall
+expression.
+ 
+<P> 
+By the way, in ordinary arithmetic you've gotten used to the idea that
+parentheses can be optional; 3+4&times;5 means the same as 3+(4&times;5).
+But in Scheme, parentheses are <EM>never</EM> optional.  Every procedure call
+must be enclosed in parentheses.

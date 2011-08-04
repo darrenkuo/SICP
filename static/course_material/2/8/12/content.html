@@ -1,0 +1,68 @@
+<A NAME="g16"></A> 
+ 
+<P>What's the average of 17 and 25?  To answer this question you could add the
+two numbers, getting 42, and divide that by two, getting 21.  You could ask
+Scheme to do this for you:
+ 
+<P><PRE>&gt; (/ (+ 17 25) 2)
+21
+</PRE> 
+ 
+<P>What's the average of 14 and 68?
+ 
+<P><PRE>&gt; (/ (+ 14 68) 2)
+41
+</PRE> 
+ 
+<P>Once you understand the technique, you could answer any such question by
+typing an expression of the form
+ 
+<P><PRE>(/ (+  ______  ______ ) 2)
+</PRE> 
+ 
+<P>to Scheme.
+ 
+<P>But if you're going to be faced with more such problems, an obvious next
+step is to <EM>generalize</EM> the technique by defining a procedure:
+ 
+<P><PRE>(define (<A NAME="g17"></A>average a b)
+  (/ (+ a b) 2))
+</PRE> 
+ 
+<P>With this definition, you can think about the next problem that
+comes along in terms of the problem itself, rather than in terms of the
+steps required for its solution:
+ 
+<P><PRE>&gt; (average 27 4)
+15.5
+</PRE> 
+ 
+<P>This is an example of what we meant when we defined
+&quot;abstraction&quot; as noticing a pattern and giving it a name.
+It's not so different from the naming of such patterns in English;
+when someone invented the name &quot;average&quot; it was, probably, after
+noticing that it was often useful to find the value halfway between
+two other values.
+ 
+<P>This naming process is more important than it sounds, because once we have a
+name for some idea, we can use that idea without thinking about its pieces.
+For example, suppose that you want to know not only the average of some
+numbers but also a measure of whether the numbers are clumped together close
+to the average, or widely spread out.  Statisticians have developed the
+&quot;standard deviation&quot; as a measure of this second property.  You'd rather
+not have to think about this mysterious formula:
+ 
+<P><P><CENTER><IMG SRC="###content_dir###/math1.gif" ALT="math display"></CENTER><P> 
+ 
+<P>but you'd be happy to use a procedure <CODE>standard-deviation</CODE> 
+that you found in a collection of statistical programs.
+ 
+<P>After all, there's no law of nature that says computers automatically know
+how to add or subtract.  You could imagine having to instruct Scheme to
+compute the sum of two large numbers digit by digit, the way you did in
+elementary school.  But instead someone has &quot;taught&quot; your computer how to
+add before you get to it, giving this technique the name <CODE>+</CODE> so that you
+can ask for the sum of two numbers without thinking about the steps required.
+By inventing <CODE>average</CODE> or <CODE>standard-deviation</CODE> we are extending the
+repertoire of computations that you can ask for without concerning yourself
+with the details.

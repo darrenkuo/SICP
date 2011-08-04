@@ -1,0 +1,31 @@
+<P><CODE>And</CODE> and <A NAME="g93"></A><CODE>or</CODE> are also <A NAME="g94"></A><A NAME="g95"></A>special forms.  They evaluate
+<A NAME="g96"></A> their arguments in order from left to right and stop as soon as they can.  For <CODE>or</CODE>, this means
+returning true as soon as any of the arguments is true.  <CODE>And</CODE> returns
+false as soon as any argument is false.  This turns out to be useful in
+cases like the following:
+ 
+<P><PRE>(define (divisible? big small)
+  (= (remainder big small) 0))
+ 
+(define (<A NAME="g97"></A>num-divisible-by-4? x)
+  (and (number? x) (divisible? x 4)))
+ 
+&gt; (num-divisible-by-4? 16)
+#T
+ 
+&gt; (num-divisible-by-4? 6)
+#F
+ 
+&gt; (num-divisible-by-4? 'aardvark)
+#F
+ 
+&gt; (divisible? 'aardvark 4)
+ERROR: AARDVARK IS NOT A NUMBER
+</PRE> 
+ 
+<P>We want to see if <CODE>x</CODE> is a number, and, if so, if it's
+divisible by <CODE>4</CODE>.  It would be an error to apply <CODE>divisible?</CODE> to a
+nonnumber.  If <CODE>and</CODE> were an ordinary procedure, the two tests (<CODE>number?</CODE> and <CODE>divisible?</CODE>) would both be evaluated before we would
+have a chance to pay attention to the result of the first one.  Instead, if
+<CODE>x</CODE> turns out not to be a number, our procedure will return <CODE>#f</CODE> 
+without trying to divide it by <CODE>4</CODE>.

@@ -1,0 +1,107 @@
+<P>A function that returns either <CODE>#t</CODE> or <CODE>#f</CODE> is called a <EM>predicate.</EM> You've
+already seen the <A NAME="g69"></A><CODE>equal?</CODE> predicate.  It takes two arguments, which
+can be of any type, and returns <CODE>#t</CODE> if the two arguments are the same
+value, or <CODE>#f</CODE> if they're different.  It's a convention in Scheme that
+the names of predicates end with a question mark, but that's just a
+convention.  Here are some other useful predicates:
+ 
+<P> 
+<PRE>&gt; (member? 'mick '(dave dee dozy beaky mick and tich))
+#T
+&gt; (member? 'mick '(john paul george ringo))
+#F
+&gt; (member? 'e 'truly)
+#F
+</PRE> 
+ 
+<P> 
+<PRE>&gt; (member? 'y 'truly)
+#T
+&gt; (= 3 4)
+#F
+&gt; (= 67 67)
+#T
+&gt; (&gt; 98 97)
+#T
+&gt; (before? 'zorn 'coleman)
+#F
+&gt; (before? 'pete 'ringo)
+#T
+&gt; (empty? '(abbey road))
+#F
+&gt; (empty? '())
+#T
+&gt; (empty? 'hi)
+#F
+&gt; (empty? (bf (bf 'hi)))
+#T
+&gt; (empty? &quot;&quot;)
+#T
+</PRE> 
+ 
+<P> 
+ 
+<P><CODE>Member?</CODE> takes two arguments; it checks to see if the first
+<A NAME="memq"></A> 
+<A NAME="g70"></A> 
+one is a member of the second.  The <A NAME="g71"></A><CODE>=</CODE>, <A NAME="g72"></A><CODE>&gt;</CODE>, <A NAME="g73"></A><CODE>&lt;</CODE>,
+<A NAME="g74"></A><CODE>&gt;=</CODE>, and <A NAME="g75"></A><CODE>&lt;=</CODE> functions take two numbers as arguments and do the
+obvious comparisons.  (By the way, these are exceptions to the convention about
+question marks.)  <CODE>Before?</CODE> is like <CODE>&lt;</CODE>, but it compares two words
+<A NAME="g76"></A> 
+alphabetically.  <CODE>Empty?</CODE> checks to see if its argument
+<A NAME="g77"></A> 
+is either the empty word or the empty sentence.
+ 
+<P> 
+ 
+<P>Why do we have both <CODE>equal?</CODE> and <CODE>=</CODE> in Scheme?  The first of these
+works on any kind of Scheme data, while the second is defined only for
+numbers.  You could get away with always using <CODE>equal?</CODE>, but the more
+specific form makes your program more self-explanatory; people reading the
+program know right away that you're comparing numbers.
+ 
+<P> 
+ 
+<P>There are also several predicates that can be used to test the type of their
+argument:
+ 
+<P> 
+ 
+<P><PRE>&gt; (<A NAME="g78"></A>number? 'three)
+#F
+&gt; (number? 74)
+#T
+&gt; (<A NAME="g79"></A>boolean? #f)
+#T
+&gt; (boolean? '(the beatles))
+#F
+</PRE> 
+ 
+<P> 
+<PRE>&gt; (boolean? 234)
+#F
+&gt; (boolean? #t)
+#T
+&gt; (<A NAME="g80"></A>word? 'flying)
+#T
+&gt; (word? '(dig it))
+#F
+&gt; (word? 87)
+#T
+&gt; (<A NAME="g81"></A>sentence? 'wait)
+#F
+&gt; (sentence? '(what goes on))
+#T
+</PRE> 
+ 
+<P>Of course, we can also define new predicates:
+ 
+<P> 
+ 
+<P><PRE>(define (vowel? letter)
+  (member? letter 'aeiou))
+ 
+(define (positive? number)
+  (&gt; number 0))
+</PRE> 

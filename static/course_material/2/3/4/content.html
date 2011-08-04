@@ -1,0 +1,121 @@
+<P>You may not have realized it, but inside your computer there are thousands
+of little people.  Each of them is a specialist in one particular
+Scheme procedure.  The head little person, Alonzo, is in charge of the
+read-eval-print loop.
+ 
+<P> 
+When you enter an expression, such as
+ 
+<P><PRE>(- (+ 5 8) (+ 2 4))
+</PRE> 
+ 
+<P>Alonzo reads it, hires other little people to help him evaluate
+it, and finally prints <CODE>7</CODE>, its value.  We're going to focus on the
+evaluation step.
+ 
+<P> 
+Three little people work together to evaluate the expression: a minus person
+and two plus people.  (To make this account easier to read, we're using the
+ordinary English words &quot;minus&quot; and &quot;plus&quot; to refer to the procedures
+whose Scheme names are <CODE>-</CODE> and <CODE>+</CODE>.  Don't be confused by this and
+try to type <CODE>minus</CODE> to Scheme.)
+ 
+<P>Since the overall expression is a subtraction, Alonzo hires Alice, the first
+available minus specialist.  Here's how the little people evaluate the
+expression:
+ 
+<P><P><TABLE><TR><TH align="right" valign="top">&bull;<TD>&nbsp;&nbsp;&nbsp;&nbsp;<TD valign="top">Alice wants to be given some numbers, so before she can do any work, she
+complains to Alonzo that she wants to know which numbers to subtract.
+ 
+</TABLE><TABLE><TR><TH align="right" valign="top">&bull;<TD>&nbsp;&nbsp;&nbsp;&nbsp;<TD valign="top">Alonzo looks at the subexpressions that should provide Alice's
+arguments, namely, <CODE>(+ 5 8)</CODE> and <CODE>(+ 2 4)</CODE>.  Since both of these are
+addition problems, Alonzo hires two plus specialists, Bernie and Cordelia,
+and tells them to report their results to Alice.
+ 
+</TABLE><TABLE><TR><TH align="right" valign="top">&bull;<TD>&nbsp;&nbsp;&nbsp;&nbsp;<TD valign="top">The first plus person, Bernie, also wants some numbers, so he asks
+Alonzo for them.
+ 
+</TABLE><TABLE><TR><TH align="right" valign="top">&bull;<TD>&nbsp;&nbsp;&nbsp;&nbsp;<TD valign="top">Alonzo looks at the subexpressions of <CODE>(+ 5 8)</CODE> that should provide
+Bernie's arguments, namely, <CODE>5</CODE> and <CODE>8</CODE>.  Since these are both
+atomic, Alonzo can give them directly to Bernie.
+ 
+</TABLE><TABLE><TR><TH align="right" valign="top">&bull;<TD>&nbsp;&nbsp;&nbsp;&nbsp;<TD valign="top">Bernie adds his arguments, <CODE>5</CODE> and <CODE>8</CODE>, to get <CODE>13</CODE>.  He
+does this in his head&mdash;we don't have to worry about how he knows how to
+add; that's his job.
+ 
+</TABLE><TABLE><TR><TH align="right" valign="top">&bull;<TD>&nbsp;&nbsp;&nbsp;&nbsp;<TD valign="top">The second plus person, Cordelia, wants some arguments; Alonzo looks at
+the subexpressions of <CODE>(+ 2 4)</CODE> and gives the <CODE>2</CODE> and <CODE>4</CODE> to
+Cordelia.  She adds them, getting <CODE>6</CODE>.
+ 
+</TABLE><TABLE><TR><TH align="right" valign="top">&bull;<TD>&nbsp;&nbsp;&nbsp;&nbsp;<TD valign="top">Bernie and Cordelia hand their results to the waiting Alice, who can now
+subtract them to get <CODE>7</CODE>.  She hands that result to Alonzo, who prints
+it.
+ 
+</TABLE><P> 
+How does Alonzo know what's the argument to what?  That's what the grouping
+of subexpressions with parentheses is about.  Since the plus expressions are
+inside the minus expression, the plus people have to give their results to
+the minus person.
+ 
+<P>We've made it seem as if Bernie does his work before Cordelia does hers.  In
+fact, the <EM><A NAME="g7"></A><A NAME="g8"></A>order of evaluation</EM> of the argument subexpressions
+is not specified in Scheme; different implementations may do it in different
+orders.  In particular, Cordelia might do her work before Bernie, or they
+might even do their work at the same time, if we're using a <EM>parallel
+processing</EM> computer.  However, it <EM>is</EM> important that both Bernie
+and Cordelia finish their work before Alice can do hers.
+ 
+<P>The entire call to <CODE>-</CODE> is itself a single expression; it could be a
+part of an even larger expression:
+ 
+<P><PRE>&gt; (* (- (+ 5 8) (+ 2 4))
+     (/ 10 2))
+35
+</PRE> 
+ 
+<P>This says to multiply the numbers 7 and 5, except that instead of
+saying 7 and 5 explicitly, we wrote expressions whose values are 7 and 5.
+(By the way, we would say that the above expression has three
+subexpressions, the <CODE>*</CODE> and the two arguments.  The argument
+subexpressions, in turn, have their own subexpressions.  However, these
+sub-subexpressions, such as <CODE>(+ 5 8)</CODE>, don't count as
+subexpressions of the whole thing.)
+ 
+<P>We can express this organization of little people more formally.  If
+an expression is atomic, Scheme just knows the value.<A NAME="text3" HREF="#ft3">[3]</A> Otherwise, it is a compound
+expression, so Scheme first evaluates all the subexpressions (in some
+unspecified order) and then applies the value of the first one,
+which had better be a procedure, to the values of the rest of them.
+Those other subexpressions are the arguments.
+ 
+<P>We can use this rule to evaluate arbitrarily complex expressions, and
+Scheme won't get confused.  No matter how long the expression is, it's made
+up of smaller subexpressions to which the same rule applies.
+Look at this long, messy example:
+<A NAME="g9"></A> 
+ 
+<P><PRE>&gt; (+ (* 2 (/ 14 7) 3)
+     (/ (* (- (* 3 5) 3) (+ 1 1))
+        (- (* 4 3) (* 3 2)))
+     (- 15 18))
+13
+</PRE> 
+ 
+<P>Scheme understands this by looking for the subexpressions of the overall
+expression, like this:
+ 
+<P><PRE>(+ ()
+   (        ; One of them takes two lines but you can tell by
+      )     ; matching parentheses that they're one expression.
+   ())
+</PRE> 
+ 
+<P>(Scheme ignores everything to the right of a semicolon, so
+semicolons can be used to indicate comments, as above.)
+ 
+<P> 
+Notice that in the example above we asked <CODE>+</CODE> to add <EM>three</EM> 
+numbers.  In the <CODE>functions</CODE> program of Chapter 2 we
+pretended that every Scheme function accepts a fixed number of arguments,
+but actually, some functions can accept any number.  These include <CODE>+</CODE>,
+<CODE>*</CODE>, <CODE>word</CODE>, and <CODE>sentence</CODE>.

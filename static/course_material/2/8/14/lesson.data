@@ -1,0 +1,1 @@
+{'index': 14, 'type': u'lesson', 'readable': u'True and checkAccessed(2, user) and checkAccessed(3, user) and checkAccessed(8, user) and (not checkSF(SF_PROGRAMMED, user) and not checkSF(SF_SCHEME, user))', 'chapters': [], 'title': u'The Substitution Model'}

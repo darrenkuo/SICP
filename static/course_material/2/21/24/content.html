@@ -1,0 +1,16 @@
+<P>There are a few subtleties that we haven't told you about yet.  First of
+all, <A NAME="g90"></A><CODE>if</CODE> is a <A NAME="g91"></A><A NAME="g92"></A>special form.  Remember that we're going to
+need the value of only one of its last two arguments.  It would be wasteful
+for Scheme to evaluate the other one.  So if you say
+ 
+<P><PRE>(if (= 3 3)
+    'sure
+    (factorial 1000))
+</PRE> 
+ 
+<P><CODE>if</CODE> won't compute the factorial of 1000 before returning
+<CODE>sure</CODE>.
+ 
+<P>The rule is that <CODE>if</CODE> always evaluates its first argument.  If the value
+of that argument is true, then <CODE>if</CODE> evaluates its second argument and
+returns its value.  If the value of the first argument is false, then <CODE>if</CODE> evaluates its third argument and returns that value.

@@ -1,0 +1,13 @@
+<P>We said earlier in a footnote that Scheme doesn't actually do all the
+copying and substituting we've been talking about.  What actually happens is
+<A NAME="g12"></A> 
+more like our model of global variables, in which there is a chalkboard
+somewhere that associates names with values&mdash;except that instead of making
+a new copy of every expression with values substituted for names, Scheme
+works with the original expression and looks up the value for each
+name at the moment when that value is needed.  To make local variables work,
+there are several chalkboards: a global one and one for each little person.
+ 
+<P>The fully detailed model of variables using several chalkboards is what many
+people find hardest about learning Scheme.  That's why we've chosen to use
+the simpler substitution model.

@@ -1,0 +1,27 @@
+ 
+<P>We've suggested that a procedure you define, such as <CODE>average</CODE>, is
+<A NAME="g18"></A> 
+<A NAME="g19"></A> 
+essentially similar to one that's built into Scheme, such as <CODE>+</CODE>.
+In particular, the rules for building expressions are the same whether
+the building blocks are primitive procedures or defined procedures.
+ 
+<P><PRE>&gt; (average (+ 10 8) (* 3 5))
+16.5
+ 
+&gt; (average (average 2 3) (average 4 5))
+3.5
+ 
+&gt; (sqrt (average 143 145))
+12
+</PRE> 
+ 
+<P>Any return value can be used as an end in itself, as the return
+value from <CODE>sqrt</CODE> was used in the last of these examples, or it can
+provide an argument to another procedure, as the return value from
+<CODE>*</CODE> was used in the first of these examples.
+ 
+<P>These small examples may seem arbitrary, but the same idea, composition of
+functions, is the basis for all Scheme programming.  For example, the
+complicated formula we gave for standard deviation requires computing the
+squares of several numbers.  So if we were to write a <CODE>standard-deviation</CODE> procedure, it would invoke <CODE>square</CODE>.

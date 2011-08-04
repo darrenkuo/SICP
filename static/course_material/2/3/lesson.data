@@ -1,0 +1,1 @@
+{'index': 3, 'readable': u'True and checkAccessed(2, user) and ((not checkSF(SF_PROGRAMMED, user) and not checkSF(SF_SCHEME, user)) or (time > 1294473600000))', 'type': u'lesson', 'chapters': ['4', '5', '6', '7'], 'title': u'Expressions'}
