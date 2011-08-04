@@ -1,4 +1,4 @@
-import web
+import src.web as web
 
 from src.globals import *
 from src.display import *

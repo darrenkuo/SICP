@@ -4,7 +4,7 @@ from hashlib import sha1
 from os.path import join
 from random import randint
 
-from student_progress import create_user_permission_file
+#from student_progress import create_user_permission_file
 from utils import getDbCursor
 from web import form
 
@@ -74,7 +74,7 @@ def register_user(login, password, db):
     except Exception as e:
         web.debug(str(e))
 
-    create_user_permission_file(login)
+    #create_user_permission_file(login)
 
     try:
         import mail

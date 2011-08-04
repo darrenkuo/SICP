@@ -25,6 +25,7 @@ def make_blank(directory):
         
     return data
 
+'''
 def create_user_permission_file(login):
     f = open(join(permission_files_path, '%s.permission' % (login)), 'w')
     
@@ -35,6 +36,5 @@ def create_user_permission_file(login):
     #data[data['chapters'][0][0]][subchapter['chapters'][0][0]]['readable'] = True
 
     f.write(str(data))
-    f.close()
-        
-        
+    f.close()     
+'''
