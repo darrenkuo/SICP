@@ -1,1 +1,134 @@
-<img src="http://www.coachnickhorton.com/wp-content/uploads/2009/11/under-construction-simpsons.gif"/>
+<b>Topic:</b> Higher-order procedures</br></br>
+<div class="p"><!----></div> 
+<b>Reading:</b> 
+Abelson &amp; Sussman, Section 1.3
+<div class="p"><!----></div> 
+<b>Note</b> that we are skipping 1.2; we'll get to it later.
+Because of this, never mind for now the stuff about iterative versus
+recursive processes in 1.3 and in the exercises from that section.
+ 
+<br/>
+<br/>
+<div class="p"><!----></div> 
+Don't panic if you have trouble with the half-interval example on pp. 67-68; you can just skip it.  Try to read and understand everything else.
+ 
+<div class="p"><!----></div> 
+<br/>
+<b>Homework:</b> 
+<div class="p"><!----></div> 
+1.  Abelson &amp; Sussman, exercises 1.31(a), 1.32(a), 1.33, 1.40, 1.41, 1.43, 1.46
+<div class="p"><!----></div> 
+(Pay attention to footnote 51; you'll need to know the ideas in
+these exercises later in the semester.)
+ 
+<div class="p"><!----></div> 
+ 
+<div class="p"><!----></div> 
+2.  Last week you wrote procedures <tt>squares</tt>, that squared each number
+in its argument sentence, and saw <tt>pigl-sent</tt>, that <tt>pigl</tt>ed each word
+in its argument sentence.  Generalize this pattern to create a higher-order
+procedure called <tt>every</tt> that applies an <i>arbitrary </i> procedure,
+given as an argument,
+to each word of an argument sentence.
+This procedure is used as follows:
+ 
+<div class="p"><!----></div> 
+<tt>  <pre>&#62; (every square '(1 2 3 4))
+(1 4 9 16)
+&#62; (every first '(nowhere man))
+(n m)
+ 
+</pre></tt> 
+ 
+<div class="p"><!----></div> 
+3.  Our Scheme library provides versions of the <tt>every</tt> function from
+the last exercise and the <tt>keep</tt> function shown in lecture.  Get
+familiar with these by trying examples such as the following:
+ 
+<div class="p"><!----></div> 
+<tt>  <pre>(every (lambda (letter) (word letter letter)) 'purple)
+(every (lambda (number) (if (even? number) (word number number) number))
+       '(781 5 76 909 24))
+(keep even? '(781 5 76 909 24))
+(keep (lambda (letter) (member? letter 'aeiou)) 'bookkeeper)
+(keep (lambda (letter) (member? letter 'aeiou)) 'syzygy)
+(keep (lambda (letter) (member? letter 'aeiou)) '(purple syzygy))
+(keep (lambda (wd) (member? 'e wd)) '(purple syzygy))
+ 
+</pre></tt> 
+ 
+<div class="p"><!----></div> 
+
+<b>Extra for experts:</b> 
+<div class="p"><!----></div> 
+In principle, we could build a version of Scheme with no primitives except
+<tt>lambda</tt>.  Everything else can be defined in terms of <tt>lambda</tt>,
+although it's
+not done that way in practice because it would be so painful.  But we can
+get a sense of the flavor of such a language by eliminating one feature at
+a time from Scheme to see how to work around it.
+ 
+<div class="p"><!----></div> 
+In this problem we explore a Scheme without <tt>define</tt>.  We can give things
+names by using argument binding, as <tt>let</tt> does, so instead of
+ 
+<div class="p"><!----></div> 
+<tt>  <pre>(define (sumsq a b)
+  (define (square x) (* x x))
+  (+ (square a) (square b)))
+ 
+<div class="p"><!----></div> 
+(sumsq 3 4)
+ 
+</pre></tt> 
+ 
+<div class="p"><!----></div> 
+we can say
+ 
+<div class="p"><!----></div> 
+<tt>  <pre>((lambda (a b)
+   ((lambda (square)
+      (+ (square a) (square b)))
+    (lambda (x) (* x x))))
+ 3 4)
+ 
+</pre></tt> 
+ 
+<div class="p"><!----></div> 
+This works fine as long as we don't want to use <i>recursive </i> procedures.
+But we can't replace
+ 
+<div class="p"><!----></div> 
+<tt>  <pre>(define (fact n)
+  (if (= n 0)
+      1
+      (* n (fact (- n 1)))))
+ 
+<div class="p"><!----></div> 
+(fact 5)
+ 
+</pre></tt> 
+ 
+<div class="p"><!----></div> 
+by
+ 
+<div class="p"><!----></div> 
+<tt>  <pre>((lambda (n)
+   (if ...))
+ 5)
+ 
+</pre></tt> 
+ 
+<div class="p"><!----></div> 
+because what do we do about the invocation of <tt>fact</tt> inside the body?
+ 
+<div class="p"><!----></div> 
+Your task is to find a way to express the <tt>fact</tt> procedure in a Scheme
+without any way to define global names.
+ 
+<div class="p"><!----></div> 
+<br /><hr /> 
+Unix feature of the week: <tt>pine</tt>, <tt>mail</tt>, <tt>firefox</tt> 
+<div class="p"><!----></div> 
+Emacs feature of the week: <tt>M-x info</tt>, <tt>C-x u</tt> (undo)
+<div class="p"><!----></div> 

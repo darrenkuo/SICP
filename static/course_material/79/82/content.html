@@ -1,0 +1,84 @@
+<b>CS 61A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Week 7 Lab
+<div class="p"><!----></div>
+Monday afternoon, Tuesday, or Wednesday morning</b>
+<div class="p"><!----></div>
+
+
+<div class="p"><!----></div>
+1.  Modify the <tt>person</tt> class given in the lecture notes for week 7
+(it's in the file <tt>demo2.scm</tt> in the <tt>&#126;cs61a/lectures/3.0</tt>
+directory) to add a <tt>repeat</tt>
+method, which repeats the last thing said.  Here's an example of
+responses to the <tt>repeat</tt> message.
+
+<div class="p"><!----></div>
+<tt>  <pre>&#62; (define brian (instantiate person 'brian))
+brian
+&#62; (ask brian 'repeat)
+()
+&#62; (ask brian 'say '(hello))
+(hello)
+&#62; (ask brian 'repeat)
+(hello)
+&#62; (ask brian 'greet)
+(hello my name is brian)
+&#62; (ask brian 'repeat)
+(hello my name is brian)
+&#62; (ask brian 'ask '(close the door))
+(would you please close the door)
+&#62; (ask brian 'repeat)
+(would you please close the door)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+2.  This exercise introduces you to the <tt>usual</tt> procedure
+described on page 9 of "Object-oriented Programming - Above-the-line
+View".  Read about <tt>usual</tt> there to prepare for lab.
+
+<div class="p"><!----></div>
+Suppose that we want to define a class called <tt>double-talker</tt>
+to represent people that always say things twice, for example as in
+the following dialog.
+
+<div class="p"><!----></div>
+<tt>  <pre>&#62; (define mike (instantiate double-talker 'mike))
+mike
+&#62; (ask mike 'say '(hello))
+(hello hello)
+&#62; (ask mike 'say '(the sky is falling))
+(the sky is falling the sky is falling)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Consider the following three definitions for the <tt>double-talker</tt> class.
+(They can be found online in the file <tt>&#126;cs61a/lib/double-talker.scm</tt>.)
+
+<div class="p"><!----></div>
+<tt>  <pre>(define-class (double-talker name)
+  (parent (person name))
+  (method (say stuff) (se (usual 'say stuff) (ask self 'repeat))) )
+
+<div class="p"><!----></div>
+(define-class (double-talker name)
+  (parent (person name))
+  (method (say stuff) (se stuff stuff)) )
+
+<div class="p"><!----></div>
+(define-class (double-talker name)
+  (parent (person name))
+  (method (say stuff) (usual 'say (se stuff stuff))) )
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Determine which of these definitions work as intended.
+Determine also for which messages the three versions would respond
+differently.
+
+<div class="p"><!----></div>
+<span class="roman"><tt><font size="+1">=-1
+1
+
+<div class="p"><!----></div>

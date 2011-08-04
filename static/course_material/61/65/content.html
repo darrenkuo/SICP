@@ -1,0 +1,102 @@
+<b>CS 61A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Week 5</b>
+<div class="p"><!----></div>
+Topic: Hierarchical data
+<div class="p"><!----></div>
+<b>Midterm Wednesday , 7-9pm.</b>
+
+<div class="p"><!----></div>
+<b>Reading:</b>
+Abelson &amp; Sussman, Section 2.2.2-2.2.3, 2.3.1, 2.3.3
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<b>Homework:</b>
+<div class="p"><!----></div>
+<font face="symbol"></font
+> Abelson &amp; Sussman, exercises 2.24, 2.26, 2.29, 2.30, 2.31, 2.32, 2.36, 2.37, 2.38,
+2.54.
+<div class="p"><!----></div>
+  Some of these exercises are
+harder than they look; don't give up in frustration if your early
+attempts fail.
+
+<div class="p"><!----></div>
+<font face="symbol"></font
+> Extend the calculator program from lecture to include words as data,
+providing the operations <tt>first</tt>, <tt>butfirst</tt>, <tt>last</tt>, <tt>
+butlast</tt>, and <tt>word</tt>.  Unlike Scheme, <b>your calculator should treat
+words as self-evaluating expressions</b> except when seen as the operator of a
+compound expression.  That is, it should work like these examples:
+
+<div class="p"><!----></div>
+<tt>  <pre>calc: foo
+foo
+calc: (first foo)
+f
+calc: (first (butfirst hello))
+e
+
+</pre></tt>
+
+<div class="p"><!----></div>
+The program is in <tt>&#126;cs61a/lib/calc.scm</tt>
+
+<div class="p"><!----></div>
+<b>Note: Programming project 2 is also due next week.  It consists of
+all the exercises in Section 2.2.4 of the text.</b>  You can't actually
+draw anything until you finish the project!  To begin, copy the file
+<tt>&#126;cs61a/lib/picture.scm</tt> to your directory.  To draw pictures,
+once you've completed the exercises:
+
+<div class="p"><!----></div>
+<tt>  <pre>&#62; (cs)
+&#62; (ht)
+&#62; (===your-painter=== full-frame)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+For example:
+
+<div class="p"><!----></div>
+<tt>  <pre>&#62; (wave full-frame)
+&#62; ((square-limit wave 3) full-frame)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<b>Continued on next page.</b>
+
+<div class="p"><!----></div>
+<b>Week 5 continued...</b>
+
+<div class="p"><!----></div>
+<b>Extra for experts:</b>
+<div class="p"><!----></div>
+Read section 2.3.4 and do exercises 2.67-2.72.
+
+<div class="p"><!----></div>
+<i>Programming by example: </i>  In some programming systems, instead of
+writing an algorithm, you give examples of how you'd like the program to
+behave, and the language figures out the algorithm itself:
+
+<div class="p"><!----></div>
+<tt>  <pre>&#62; (define pairup (regroup '((1 2) (3 4) ...)))
+&#62; (pairup '(the rain in spain stays mainly on the plain))
+((the rain) (in spain) (stays mainly) (on the))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Write <tt>regroup</tt>. Read <tt>&#126;cs61a/lib/regroup.problem</tt> for details.
+
+<div class="p"><!----></div>
+<br /><hr />
+Unix feature of the week: <tt>head</tt>, <tt>tail</tt>, <tt>more</tt>, <tt>cat</tt>
+<div class="p"><!----></div>
+Emacs feature of the week: <tt>M-x search-forward-regexp</tt>, <tt>M-x query-replace-regexp</tt>
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>

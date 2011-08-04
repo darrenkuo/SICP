@@ -8,6 +8,7 @@ from html import *
 from utils import *
 
 from re import match
+from re import sub
 
 def getLesson(user, page=''):
 
@@ -32,13 +33,15 @@ def getLesson(user, page=''):
         else:
             html += '%s\n' % (line)
     
-    html = str(html.replace('###content_dir###', join(course_material, path)))
+    html = clean_html(html)
+    html = sub('###content_dir###', join(course_material, path), html)
+    #html = html.replace('###content_dir###', join(course_material, path))
 
     print html
     print type(html)
 
     return sidebar_css(), lesson_layout(content=lesson_content(title=data['title'], 
-                                                         content=html, path=page))
+                                                         content=html, path=page, renderContent=False))
     
 class lesson:
     def GET(self):

@@ -1,0 +1,80 @@
+<b>CS 61A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Week 11 Lab
+<div class="p"><!----></div>
+Monday afternoon, Tuesday, or Wednesday morning</b>
+<div class="p"><!----></div>
+1.  What is the type of the value of <tt>(delay (+ 1 27))?</tt> 
+What is the type of the value of <tt>(force (delay (+ 1 27)))?</tt> 
+
+<div class="p"><!----></div>
+<br /><br />2.  Evaluation of the expression
+
+<div class="p"><!----></div>
+<tt>  <pre>(stream-cdr (stream-cdr (cons-stream 1 '(2 3))))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+ produces an error.  Why?
+
+<div class="p"><!----></div>
+<br /><br />3.  Consider the following two procedures.
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (enumerate-interval low high)
+  (if (&#62; low high)
+    '()
+    (cons low (enumerate-interval (+ low 1) high)) ) )
+
+<div class="p"><!----></div>
+(define (stream-enumerate-interval low high)
+  (if (&#62; low high)
+    the-empty-stream
+    (cons-stream low (stream-enumerate-interval (+ low 1) high)) ) )
+
+</pre></tt>
+
+<div class="p"><!----></div>
+What's the difference between the following two expressions?
+
+<div class="p"><!----></div>
+<tt>  <pre>(delay (enumerate-interval 1 3))
+(stream-enumerate-interval&nbsp;1&nbsp;3)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+<br /><br />4.  An unsolved problem in number theory concerns the following algorithm
+for creating a sequence of positive integers s<sub>1</sub>, s<sub>2</sub>, ...
+
+<div class="p"><!----></div>
+<br />by 4em<pre>Choose s<sub>1</sub> to be some positive integer.
+For n  &gt;  1,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    if s<sub>n</sub> is odd, then s<sub>n+1</sub> is 3 s<sub>n</sub> + 1;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    if s<sub>n</sub> is even, then s<sub>n+1</sub> is s<sub>n</sub> / 2.
+
+</pre>
+
+<div class="p"><!----></div>
+No matter what starting value is chosen, the sequence always
+seems to end with the values 1, 4, 2, 1, 4, 2, 1, ...
+However, it is not known if this is always the case.
+
+<div class="p"><!----></div>
+4a.  Write a procedure <tt>num-seq</tt> that, given a positive integer <tt>n</tt>
+as argument, returns the stream of values produced for <tt>n</tt>
+by the algorithm just given.  For example, <tt>(num-seq 7)</tt> should return
+the stream representing the sequence 
+7, 22, 11, 34, 17, 52, 26, 13, 40, 20, 10, 5, 16, 8, 4, 2, 1, 4, 2, 1, ...
+
+<div class="p"><!----></div>
+4b.  Write a procedure <tt>seq-length</tt> that, given a stream produced
+by <tt>num-seq</tt>, returns the number of values that occur in the sequence
+up to and including the first 1.
+For example, <tt>(seq-length (num-seq 7))</tt> should return 17.
+You should assume that there is a 1 somewhere in the sequence.
+
+<div class="p"><!----></div>
+<span class="roman"><tt><font size="+0">=-1
+
+
+<div class="p"><!----></div>

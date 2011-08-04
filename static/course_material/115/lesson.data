@@ -1,0 +1,1 @@
+{'index': 115, 'readable': u'True and checkAccessed(109, user) and checkAccessed(110, user) and checkAccessed(112, user) and checkAccessed(113, user) and checkAccessed(114, user)', 'type': u'lesson', 'chapters': ['116', '117', '118', '119', '120'], 'title': u'Week 14: Lazy evaluator and Nondeterministic evaluator'}

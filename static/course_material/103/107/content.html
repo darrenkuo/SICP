@@ -1,0 +1,74 @@
+<b>CS 61A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Week 12</b>
+<div class="p"><!----></div>
+Topic: Metacircular evaluator
+<div class="p"><!----></div>
+<b>Midterm Wednesday , 7-9pm.</b>
+
+<div class="p"><!----></div>
+<b>Reading:</b>
+
+<div class="p"><!----></div>
+Abelson &amp; Sussman, 4.1.1-6
+<div class="p"><!----></div>
+MapReduce paper in course reader.
+<div class="p"><!----></div>
+(metacircular evaluator: <tt>&#126;cs61a/lib/mceval.scm</tt>)
+
+<div class="p"><!----></div>
+<b>Homework:</b>
+<div class="p"><!----></div>
+Some students have complained that this week's homework is very
+time-consuming.  Accordingly, with some reluctance, I've marked a few
+exercises as optional; these are the ones to leave out if you're really
+pressed for time.  But it's much better if you do all of them!  The
+optional ones have <tt>*</tt> next to them.
+
+<div class="p"><!----></div>
+1.  A&amp;S exercises 4.3, 4.6, 4.7<tt>*</tt>, 4.10<tt>*</tt>, 4.11<tt>*</tt>,
+4.13, 4.14, 4.15
+
+<div class="p"><!----></div>
+2<tt>*</tt>. Modify the metacircular evaluator to allow <i>type-checking </i> of
+arguments to procedures.  Here is how the feature should work.  When a new
+procedure is defined, a formal parameter can be either a symbol as usual or
+else a list of two elements.  In this case, the second element is a symbol,
+the name of the formal parameter.  The first element is an expression whose
+value is a predicate function that the argument must satisfy.  That function
+should return <tt>#t</tt> if the argument is valid.  For example, here is a
+procedure <tt>foo</tt> that has type-checked parameters <tt>num</tt> and <tt>list</tt>:
+
+<div class="p"><!----></div>
+<tt>  <pre>&#62; (define (foo (integer? num) ((lambda (x) (not (null? x))) list))
+    (list-ref list num))
+FOO
+&#62; (foo 3 '(a b c d e))
+D
+&#62; (foo 3.5 '(a b c d e))
+Error: wrong argument type - 3.5
+&#62; (foo 2 '())
+Error: wrong argument type - ()
+
+</pre></tt>
+
+<div class="p"><!----></div>
+In this example we define a procedure <tt>foo</tt> with two formal parameters,
+named <tt>num</tt> and <tt>list</tt>.  When <tt>foo</tt> is invoked, the evaluator
+will check to see that the first actual argument is an integer and that the
+second actual argument is not empty.  The expression whose value is the
+desired predicate function should be evaluated with respect to <tt>foo</tt>'s
+defining environment.  (Hint: Think about <tt>extend-environment</tt>.)
+
+<div class="p"><!----></div>
+<b>Extra for experts:</b>
+<div class="p"><!----></div>
+Abelson &amp; Sussman, exercises 4.16 through 4.21
+<div class="p"><!----></div>
+<br /><hr />
+Unix feature of the week: <tt>echo</tt>, <tt>set</tt>, <tt>setenv</tt>, <tt>printenv</tt>
+<div class="p"><!----></div>
+Emacs feature of the week: <tt>M-!</tt> (run shell command)
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>

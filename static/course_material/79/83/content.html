@@ -1,0 +1,62 @@
+<b>CS 61A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Week 8</b>
+<div class="p"><!----></div>
+Topic: Assignment, state, environments
+<div class="p"><!----></div>
+<b>Midterm Wednesday , 7-9pm.</b>
+
+<div class="p"><!----></div>
+<b>Reading:</b>
+Abelson &amp; Sussman, Section 3.1, 3.2
+<div class="p"><!----></div>
+Also read "Object-Oriented Programming-Below-the-line view" (in course
+reader).
+
+<div class="p"><!----></div>
+<b>Homework:</b>
+<div class="p"><!----></div>
+Abelson &amp; Sussman, exercises 3.3, 3.4, 3.7, 3.8, 3.10, 3.11
+<div class="p"><!----></div>
+<b>Note:</b> Part I of programming project 3 is also due next week.
+
+<div class="p"><!----></div>
+<b>Extra for experts:</b>
+<div class="p"><!----></div>
+The purpose of the environment model is to represent the scope of
+variables; when you see an <tt>x</tt> in a program, which variable <tt>x</tt>
+does it mean?
+
+<div class="p"><!----></div>
+Another way to solve this problem would be to <i>rename </i> all the
+local variables so that there are never two variables with the same name.
+Write a procedure <tt>unique-rename</tt> that takes a (quoted) lambda expression
+as its argument, and returns an equivalent lambda expression with the
+variables renamed to be unique:
+
+<div class="p"><!----></div>
+<tt>  <pre>&#62; (unique-rename '(lambda (x) (lambda (y) (x (lambda (x) (y x))))))
+(lambda (g1) (lambda (g2) (g1 (lambda (g3) (g2 g3)))))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Note that the original expression had two variables named <tt>x</tt>, and
+in the returned expression it's clear from the names which is which.
+You'll need a modified counter object to generate the unique names.
+
+<div class="p"><!----></div>
+You may assume that there are no <tt>quote</tt>, <tt>let</tt>, or <tt>define</tt>
+expressions, so that every symbol is a variable reference, and variables are
+created only by <tt>lambda</tt>.
+
+<div class="p"><!----></div>
+Describe how you'd use <tt>unique-rename</tt> to allow the evaluation of
+Scheme programs with only a single (global) frame.
+
+<div class="p"><!----></div>
+<br /><hr />
+Unix feature of the week: <tt>foreach</tt>, <tt>grep</tt>, <tt>find</tt>
+<div class="p"><!----></div>
+Emacs feature of the week: <tt>C-t</tt> (transpose), <tt>M-c</tt>, <tt>M-u</tt>, <tt>M-l</tt> (change case)
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>

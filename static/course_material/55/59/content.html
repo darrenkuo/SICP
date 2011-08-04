@@ -1,0 +1,71 @@
+<b>CS 61A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Week 4</b>
+<div class="p"><!----></div>
+Topic: Data abstraction
+<div class="p"><!----></div>
+<b>Reading:</b>
+Abelson &amp; Sussman, Sections 2.1 and 2.2.1 (pages 79-106)
+<div class="p"><!----></div>
+<b>Homework:</b>
+<div class="p"><!----></div>
+Abelson &amp; Sussman, exercises 2.7, 2.8, 2.10, 2.12, 2.17, 2.20, 2.22, 2.23
+<div class="p"><!----></div>
+(Note:  "Spans zero" means that one bound is  <font face="symbol"></font
+>  zero and the other
+is  <font face="symbol"></font
+>  zero!)
+
+<div class="p"><!----></div>
+<font face="symbol"></font
+> Write a procedure <tt>substitute</tt> that takes three arguments:&nbsp;a
+list, an <i>old </i> word, and a <i>new </i> word.  It should return
+a copy of the list, but with every occurrence of the old word
+replaced by the new word, even in sublists.  For example:
+
+<div class="p"><!----></div>
+<tt>  <pre>&#62; (substitute '((lead guitar) (bass guitar) (rhythm guitar) drums)
+	      'guitar 'axe)
+((lead axe) (bass axe) (rhythm axe) drums)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+<font face="symbol"></font
+> Now write <tt>substitute2</tt> that takes a list, a <i>list </i> of
+old words, and a <i>list </i> of new words; the last two lists should be
+the same length.  It should return a copy of the first argument, but with
+each word that occurs in the second argument replaced by the
+corresponding word of the third argument:
+
+<div class="p"><!----></div>
+<tt>  <pre>&#62; (substitute2 '((4 calling birds) (3 french hens) (2 turtle doves))
+               '(1 2 3 4) '(one two three four))
+((four calling birds) (three french hens) (two turtle doves))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+<b>Note:</b> The first midterm is next week.
+
+<div class="p"><!----></div>
+<b>Extra for experts:</b>
+<div class="p"><!----></div>
+Write the procedure <tt>cxr-function</tt> that takes as its argument a word
+starting with <tt>c</tt>, ending with <tt>r</tt>, and having a string of letters
+<tt>a</tt> and/or <tt>d</tt> in between, such as <tt>cdddadaadar</tt>.  It should
+return the corresponding function.
+
+<div class="p"><!----></div>
+Abelson &amp; Sussman, exercise 2.6.  Besides addition, invent multiplication and
+exponentiation of nonnegative integers.  If you're <i>really </i>
+enthusiastic, see if you can invent subtraction.  (Remember, the rule of this
+game is that you have only <tt>lambda</tt> as a starting point.)  Read <tt>
+&#126;cs61a/lib/church-hint</tt> for some suggestions.
+
+<div class="p"><!----></div>
+<br /><hr />
+Unix feature of the week: <tt>rm</tt>, <tt>mv</tt>, <tt>cp</tt>, <tt>rmdir</tt>, <tt>ln -s</tt>
+<div class="p"><!----></div>
+Emacs feature of the week: <tt>M-%</tt> (find and replace text)
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>

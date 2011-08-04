@@ -86,6 +86,7 @@ def new_page_form():
 def make_new_page(data):
     (title, path, code, page_type) = (data['title'], data['page'], data['code'], data['type'])
     print data
+    from utils import *
     (conn, cursor) = getDbCursor('course.db')
     tmp_path = str(randint(0, maxint))
     cursor.execute('INSERT into chapter values(null, "%s");' % (tmp_path))
@@ -109,6 +110,8 @@ def make_new_page(data):
     f = open(join(course_material, new_dir, 'content.html'), 'w')
     f.write('<img src="http://www.coachnickhorton.com/wp-content/uploads/2009/11/under-construction-simpsons.gif"/>')
     f.close()
+
+    return newID
 
 # edit page
 def edit_page_form(page):

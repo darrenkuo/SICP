@@ -1,1 +1,97 @@
-<img src="http://www.coachnickhorton.com/wp-content/uploads/2009/11/under-construction-simpsons.gif"/>
+<b>Topic:</b> Recursion and iteration</br></br>
+<div class="p"><!----></div> 
+<b>Reading:</b> 
+Abelson &amp; Sussman, Section 1.2 through 1.2.4 (pages 31-47)
+<div class="p"><!----></div> 
+</br>
+<div class="p"><!----></div> 
+1.  Abelson &amp; Sussman, exercises 1.16, 1.35, 1.37, 1.38
+
+</br></br><div class="p"><!----></div> 
+2.  A "perfect number" is defined as a number equal to the sum of all its
+factors less than itself.  For example, the first perfect number is 6,
+because its factors are 1, 2, 3, and 6, and 1+2+3=6.  The second perfect
+number is 28, because 1+2+4+7+14=28.  What is the third perfect number?
+Write a procedure <tt>(next-perf n)</tt> that tests numbers starting with <tt> 
+n</tt> and continuing with <tt>n+1</tt>, <tt>n+2</tt>, etc.&nbsp;until a perfect number is
+found.  Then you can evaluate <tt>(next-perf 29)</tt> to solve the problem.  Hint:
+you'll need a <tt>sum-of-factors</tt> subprocedure.
+ 
+</br></br><div class="p"><!----></div> 
+[Note: If you run this program when the system is heavily loaded, it may
+take half an hour to compute the answer!  Try tracing helper procedures to
+make sure your program is on track, or start by computing <tt>(next-perf 1)</tt> 
+and see if you get 6.]
+ 
+</br></br><div class="p"><!----></div> 
+3.  Explain the effect of interchanging the order in which the base cases in
+the <tt>cc</tt> procedure on page 41 of Abelson and Sussman are checked.  That
+is, describe completely the set of arguments for which the original <tt>cc</tt> 
+procedure would return a different value or behave differently from a <tt> 
+cc</tt> procedure coded as given below, and explain how the returned values
+would differ.
+ 
+</br></br><div class="p"><!----></div> 
+<tt>  <pre>(define (cc amount kinds-of-coins)
+  (cond
+    ((or (&lt; amount 0) (= kinds-of-coins 0)) 0)
+    ((= amount 0) 1)
+    (else ... ) ) )        ; as in the original version
+ 
+</pre></tt> 
+ 
+<div class="p"><!----></div> 
+4.  Give an algebraic formula relating the values of the parameters
+<tt>b, n, counter,</tt> and <tt>product</tt> of the <tt>expt</tt> and <tt>exp-iter</tt> 
+procedures given near the top of page 45 of Abelson and Sussman.
+(The kind of answer we're looking for is
+"the sum of b, n, and counter times product is always equal to 37.")
+ 
+</br></br> 
+<div class="p"><!----></div> 
+<b>Extra for experts:</b> 
+</br></br><div class="p"><!----></div> 
+1.  The partitions of a positive integer are the different ways
+to break the integer into pieces.  The number 5 has seven partitions:
+ 
+<div class="p"><!----></div> 
+<tt>  <pre>5(one piece)
+    4, 1(two pieces)
+    3, 2(two pieces)
+    3, 1, 1(three pieces)
+    2, 2, 1(three pieces)
+    2, 1, 1, 1(four pieces)
+    1, 1, 1, 1, 1(five pieces)
+ 
+</pre></tt> 
+ 
+<div class="p"><!----></div> 
+The order of the pieces doesn't matter,
+so the partition 2, 3 is the same as the partition 3, 2
+and thus isn't counted twice.  0 has one partition.
+ 
+</br></br><div class="p"><!----></div> 
+Write a procedure <tt>number-of-partitions</tt> 
+that computes the number of partitions of its nonnegative integer argument.
+ 
+</br></br><div class="p"><!----></div> 
+2.  Compare the <tt>number-of-partitions</tt> procedure
+with the <tt>count-change</tt> procedure by
+completing the following statement: 
+ 
+</br></br><div class="p"><!----></div> 
+<tt>  <pre>Counting partitions is like making change, where the coins are ...
+ 
+</pre></tt> 
+ 
+<div class="p"><!----></div> 
+3.  (Much harder!)  Now write it to generate an iterative process;
+every recursive call must be a tail call.
+ 
+<div class="p"><!----></div> 
+<br /><hr /> 
+Unix feature of the week: <tt>mkdir</tt>, <tt>cd</tt>, <tt>pwd</tt>, <tt>ls</tt> 
+<div class="p"><!----></div> 
+Emacs feature of the week: <tt>C-M-f</tt>, <tt>C-M-b</tt>, <tt>C-M-n</tt>, <tt>C-M-p</tt> (move around Scheme code)
+<div class="p"><!----></div> 
+ 

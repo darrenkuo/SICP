@@ -165,10 +165,11 @@ class unreadable_content:
         return '<h2>This page is not accessible at the moment. It might be because unsatified requirements</h2>'    
 
 class lesson_content:
-    def __init__(self, title= None, content=None, path=None):
+    def __init__(self, title= None, content=None, path=None, renderContent=True):
         self.title = title
         self.content = content
         self.path = path
+        self.renderContent = renderContent
 
     def render(self):
         output = '<div id="content">'
@@ -177,7 +178,8 @@ class lesson_content:
             output += '<h2>%s</h2>' % (self.title)
         
         if self.content:
-            if type(self.content) == str:
+            if not self.renderContent:#type(self.content) == str:
+                #output += self.content
                 output += self.content
             else:
                 output += self.content.render()

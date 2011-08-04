@@ -1,0 +1,127 @@
+<b>CS 61A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Week 6</b>
+<div class="p"><!----></div>
+Topic: Generic Operators
+<div class="p"><!----></div>
+<b>Reading:</b>
+Abelson &amp; Sussman, Sections 2.4 through 2.5.2 (pages 169-200)
+<div class="p"><!----></div>
+<b>Homework:</b>
+<div class="p"><!----></div>
+Abelson &amp; Sussman, exercises 2.74, 2.75, 2.76, 2.77, 2.79, 2.80, 2.81, 2.83
+<div class="p"><!----></div>
+Note: Some of these are thought-exercises; you needn't actually run any Scheme
+programs for them!  (Some don't ask you to write procedures at all;
+others ask for modifications to a program that isn't online.)
+
+<div class="p"><!----></div>
+<font face="symbol"></font
+> If you haven't already finished this week's lab exercises that
+involve the <tt>scheme-1</tt> interpreter, do it now.  Then write
+a <tt>map</tt> primitive for <tt>scheme-1</tt> (call it <tt>map-1</tt> so you
+and Scheme don't get confused about which is which) that works
+correctly for all mapped procedures.
+
+<div class="p"><!----></div>
+<font face="symbol"></font
+> Modify the <tt>scheme-1</tt> interpreter
+to add the <tt>let</tt> special form.  Hint: Like a procedure call, <tt>let</tt>
+will have to use <tt>substitute</tt> to replace certain variables with their
+values.  Don't forget to evaluate the expressions that provide those
+values!
+
+<div class="p"><!----></div>
+<b>Extra for experts:</b>
+<div class="p"><!----></div>
+Another approach to the problem of type-handling is <i>type inference</i>.
+If, for instance, a procedure includes the expression <tt>(+ n k)</tt>,
+one can infer that <tt>n</tt> and <tt>k</tt> have numeric values.
+Similarly, the expression <tt>(f a b)</tt> indicates that the value of <tt>f</tt>
+is a procedure.
+
+<div class="p"><!----></div>
+Write a procedure called <tt>inferred-types</tt> that, given a definition of a
+Scheme procedure as argument, returns a list of information about the
+parameters of the procedure.  The information list should contain one
+element per parameter; each element should be a two-element list whose first
+element is the parameter name and whose second element is a word indicating
+the type inferred for the parameter.  Possible types are listed on the next
+page.
+
+<div class="p"><!----></div>
+<b>Continued on next page.</b>
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<b>Week 6 continued...</b>
+
+<div class="p"><!----></div>
+<br />
+<dl compact="compact">
+ <dt>
+<tt>?</tt></dt>
+<dd>
+ (the type can't be inferred)
+</dd>
+ <dt>
+<tt>procedure</tt></dt>
+<dd> (the parameter appeared as the first word in an
+unquoted expression or as the first argument of <tt>map</tt> or <tt>every</tt>)
+</dd>
+ <dt>
+<tt>number</tt></dt>
+<dd> (the parameter appeared as an argument of <tt>+</tt>, <tt>-</tt>,
+<tt>max</tt>, or <tt>min</tt>)
+</dd>
+ <dt>
+<tt>list</tt></dt>
+<dd> (the parameter appeared as an argument of <tt>append</tt>
+or as the second argument of <tt>map</tt> or <tt>member</tt>)
+</dd>
+ <dt>
+<tt>sentence-or-word</tt></dt>
+<dd> (the parameter appeared as an argument of <tt>first,</tt>
+<tt>butfirst,</tt> <tt>sentence,</tt> or <tt>member?</tt>, or
+as the second argument of <tt>every</tt>)
+</dd>
+ <dt>
+<tt>x</tt></dt>
+<dd> (conflicting types were inferred)
+</dd></dl><br />You should assume for this problem that the body of the procedure to
+be examined does not contain any occurrences of <tt>if</tt> or <tt>cond</tt>,
+although it may contain arbitrarily nested and quoted expressions.
+(A more ambitious inference procedure both would examine a more comprehensive
+set of procedures and could infer conditions like "nonempty list".)
+
+<div class="p"><!----></div>
+Here's an example of what your inference procedure should return.
+
+<div class="p"><!----></div>
+<tt>  <pre>(inferred-types
+  '(define (foo a b c d e f)
+    (f (append (a b) c '(b c)) (+ 5 d) (sentence (first e) f)) ) )
+
+</pre></tt>
+
+<div class="p"><!----></div>
+should return
+
+<div class="p"><!----></div>
+<tt>  <pre>((a procedure) (b ?) (c list) (d number)
+ (e sentence-or-word) (f x))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+If you're <i>really </i> ambitious, you could maintain a database of
+inferred argument types and use it when a procedure you've seen is
+invoked by another procedure you're examining!
+
+<div class="p"><!----></div>
+<br /><hr />
+Unix feature of the week: <tt>du</tt>, <tt>df</tt>, <tt>quota</tt>
+<div class="p"><!----></div>
+Emacs feature of the week: <tt>M-q</tt> (format paragraphs), <tt>C-M-q</tt> (format Scheme code)
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>

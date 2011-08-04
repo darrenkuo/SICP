@@ -1,10 +1,16 @@
+from os import remove
 from os.path import join
+from shutil import copyfile
 from sqlite3 import connect
 from time import time
 
 from globals import *
+from course_admin import make_new_page
 
 def getDbCursor(db):
+    import os
+    print os.getcwd()
+    print dbs_path, db
     db_conn = connect(join(dbs_path, db))
     db_cursor = db_conn.cursor()
     return (db_conn, db_cursor)
@@ -102,3 +108,51 @@ def setup_dbs():
     cursor.execute('CREATE TABLE users (login TEXT primary key, salt TEXT, saltpw TEXT);')
     conn.commit()
     cursor.close()
+
+def clean_html(html):
+    html = html.replace('\xc2', '.')
+    html = html.replace('\xb1', '+-')
+    html = html.replace('\xc3', ' ')
+    html = html.replace('\x96', ' ')
+    html = html.replace('\xbc', ' ')
+    html = html.replace('\xce', ' ')
+    html = html.replace('\xdb', ' ')
+    html = html.replace('\xa3', ' ')
+    html = html.replace('\xd9', ' ')
+    html = html.replace('\xae', ' ')
+    html = html.replace('\xb7', ' ')
+
+    
+    return html
+
+def new_chapter(n):
+    newID = make_new_page({'title' : 'NONE', 'page':'.', 'code' : 'True', 'type' : 'lesson'})
+
+    newID = str(newID)
+    code = "True and checkAccessed(%s, user)" % newID
+
+    id1 = make_new_page({'title' : 'Lecture Notes %d' % (n), 'page' : join('.', newID), 'code' : code, 'type' : 'lesson'})
+    id1 = str(id1)
+    remove(join(course_material, '.', newID, id1, 'content.html'))
+    copyfile('/home/darren/Documents/61AS/tex/notes_out/%s.html' % (n), join(course_material, '.', newID, id1, 'content.html'))
+
+    id1 = make_new_page({'title' : '(Optional) Lecture Webcast %d' %(n), 'page' : join('.', newID), 'code' : code, 'type' : 'lesson'})
+    id1 = str(id1)
+    
+    content = open(join(course_material, '.', newID, id1, 'content.html'), 'w')
+    content.write("""<ul> 
+  <li>Lecture 1: functional programming 1</li> 
+  <li>Lecture 2: functional programming 2</li> 
+</ul> 
+<a href="http://webcast.berkeley.edu/playlist#c,d,Computer_Science,3E89002AA9B9879E" target="_blank">Watch Lecture Video at webcast.berkeley.edu</a> """)
+    content.close()
+
+    id1 = make_new_page({'title' : 'Lab %d' % (n), 'page' : join('.', newID), 'code' : code, 'type' : 'lesson'})
+    id1 = str(id1)
+    remove(join(course_material, '.', newID, id1, 'content.html'))
+    copyfile('/home/darren/Documents/61AS/tex/labs_out/%s.html' % (n), join(course_material, '.', newID, id1, 'content.html'))
+    id1 = make_new_page({'title' : 'Homework %d' % (n), 'page' : join('.', newID), 'code' : code, 'type' : 'lesson'})
+    id1 = str(id1)
+    remove(join(course_material, '.', newID, id1, 'content.html'))
+    copyfile('/home/darren/Documents/61AS/tex/hws_out/%s.html' % (n), join(course_material, '.', newID, id1, 'content.html'))
+    make_new_page({'title' : 'Reading for next week', 'page' : join('.', newID), 'code' : code, 'type' : 'lesson'})

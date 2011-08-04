@@ -1,0 +1,69 @@
+<b>CS 61A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Week 14 Lab
+<div class="p"><!----></div>
+Monday afternoon, Tuesday, or Wednesday morning</b>
+<div class="p"><!----></div>
+
+
+
+<div class="p"><!----></div>
+1.  Lazy evaluator. Abelson and Sussman, exercises 4.27 and 4.29.
+
+<div class="p"><!----></div>
+2.  In this exercise we learn what a <i>continuation </i> is.
+Suppose we have the following definition:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (square x cont)
+  (cont (* x x)))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Here <tt>x</tt> is the number we want to square, and <tt>cont</tt> is
+the procedure to which we want to pass the result.  Now try these
+experiments:
+
+<div class="p"><!----></div>
+<tt>  <pre>&#62; (square 5 (lambda (x) x))
+
+<div class="p"><!----></div>
+&#62; (square 5 (lambda (x) (+ x 2)))
+
+<div class="p"><!----></div>
+&#62; (square 5 (lambda (x) (square x (lambda (x) x))))
+
+<div class="p"><!----></div>
+&#62; (square 5 display)
+
+<div class="p"><!----></div>
+&#62; (define foo 3)
+&#62; (square 5 (lambda (x) (set! foo x)))
+&#62; foo
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Don't just type them in - make sure you understand why they work!
+The nondeterministic evaluator works by evalutating every expression
+with <i>two </i> continuations, one used if the computation succeeds,
+and one used if it fails.
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (reciprocal x yes no)
+  (if (= x 0)
+      (no x)
+      (yes (/ 1 x))))
+
+<div class="p"><!----></div>
+&#62; (reciprocal 3 (lambda (x) x) (lambda (x) (se x '(cannot reciprocate))))
+
+<div class="p"><!----></div>
+&#62; (reciprocal 0 (lambda (x) x) (lambda (x) (se x '(cannot reciprocate))))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+<span class="roman"><tt><font size="+1">=-1
+1
+
+<div class="p"><!----></div>

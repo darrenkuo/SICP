@@ -1,0 +1,140 @@
+<b>CS 61A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Week 15</b>
+<div class="p"><!----></div>
+Topic: Logic programming
+<div class="p"><!----></div>
+<b>Reading:</b>
+Abelson &amp; Sussman, Section 4.4.1-3
+<div class="p"><!----></div>
+We are not assigning section 4.4.4, which discusses the implementation of the
+query system in detail.  Feel free to read it just for interest; besides
+deepening your understanding of logic programming, it provides an example of
+using streams in a large project.
+
+<div class="p"><!----></div>
+<b>Homework:</b>
+<div class="p"><!----></div>
+Abelson &amp; Sussman, exercises 4.56, 4.57, 4.58, 4.65
+<div class="p"><!----></div>
+For all problems that involve writing queries or rules,
+test your solutions. To run the query system and load in the sample data:
+
+<div class="p"><!----></div>
+<tt>  <pre>% stk
+&#62; (load "&#126;cs61a/lib/query.scm")
+&#62; (initialize-data-base microshaft-data-base)
+&#62; (query-driver-loop)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+You're now in the query system's interpreter.  To add an assertion:
+
+<div class="p"><!----></div>
+<tt>  <pre>(assert! (foo bar))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+To add a rule:
+
+<div class="p"><!----></div>
+<tt>  <pre>(assert! (rule (foo) (bar)))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Anything else is a query.
+
+<div class="p"><!----></div>
+<b>Extra for experts:</b>
+<div class="p"><!----></div>
+The lecture notes for this week
+describe rules that allow inference of the <tt>reverse</tt> relation
+in one direction, i.e.,
+
+<div class="p"><!----></div>
+<tt>  <pre>;;; Query input:
+(forward-reverse (a b c) ?what)
+
+<div class="p"><!----></div>
+;;; Query results:
+(FORWARD-REVERSE (A B C) (C B A))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+<b>Continued on next page.</b>
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<b>Week 15 continued...</b>
+
+<div class="p"><!----></div>
+<tt>  <pre>;;; Query input:
+(forward-reverse ?what (a b c))
+
+<div class="p"><!----></div>
+;;; Query results:
+<span class="roman">... infinite loop</span>
+
+</pre></tt>
+
+<div class="p"><!----></div>
+or
+
+<div class="p"><!----></div>
+<tt>  <pre>;;; Query input:
+(backward-reverse ?what (a b c))
+
+<div class="p"><!----></div>
+;;; Query results:
+(BACKWARD-REVERSE (C B A) (A B C))
+
+<div class="p"><!----></div>
+;;; Query input:
+(backward-reverse (a b c) ?what)
+
+<div class="p"><!----></div>
+;;; Query results:
+<span class="roman">... infinite loop</span>
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Define rules that allow inference of the <tt>reverse</tt> relation in both
+directions, to produce the following dialog:
+
+<div class="p"><!----></div>
+<tt>  <pre>;;; Query input:
+(reverse ?what (a b c))
+
+<div class="p"><!----></div>
+;;; Query results:
+(REVERSE (C B A) (A B C))
+
+<div class="p"><!----></div>
+;;; Query input:
+(reverse (a b c) ?what)
+
+<div class="p"><!----></div>
+;;; Query results:
+(REVERSE (A B C) (C B A))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+<br /><hr />
+Unix feature of the week: <tt>perl</tt>, <tt>awk</tt>, <tt>sed</tt>
+<div class="p"><!----></div>
+Emacs feature of the week: <tt>M-x shell-command-on-region</tt>
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+
+<br /><br /><hr /><small>File translated from
+T<sub><font size="-1">E</font></sub>X
+by <a href="http://hutchinson.belmont.ma.us/tth/">
+T<sub><font size="-1">T</font></sub>H</a>,
+version 3.85.<br />On  4 Aug 2011, 09:05.</small>
+</html>

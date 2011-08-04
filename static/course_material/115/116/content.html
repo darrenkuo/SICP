@@ -1,0 +1,822 @@
+<b>CS 61A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Lecture Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Week 14</b>
+<div class="p"><!----></div>
+Topic: Lazy evaluator, Nondeterministic evaluator
+<div class="p"><!----></div>
+<b>Reading:</b>
+Abelson &amp; Sussman, Section 4.2, 4.3
+<div class="p"><!----></div>
+<b><font face="symbol"></font
+> Lazy evaluator.</b>  To load the lazy metacircular evaluator, say
+
+<div class="p"><!----></div>
+<tt>  <pre>(load "&#126;cs61a/lib/lazy.scm")
+
+</pre></tt>
+
+<div class="p"><!----></div>
+<b>Streams require careful attention</b>
+
+<div class="p"><!----></div>
+To make streams of pairs, the text uses this procedure:
+
+<div class="p"><!----></div>
+<tt>  <pre>;;;;;                        In file cs61a/lectures/4.2/pairs.scm
+(define (pairs s t)
+  (cons-stream
+   (list (stream-car s) (stream-car t))
+   (interleave
+    (stream-map (lambda (x) (list (stream-car s) x))
+		(stream-cdr t))
+    (pairs (stream-cdr s) (stream-cdr t)))))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+In exercise 3.68, Louis Reasoner suggests this simpler version:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (pairs s t)
+  (interleave
+   (stream-map (lambda (x) (list (stream-car s) x)) t)
+   (pairs (stream-cdr s) (stream-cdr t))))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Of course you know because it's Louis that this doesn't work.  But why
+not?  The answer is that <tt>interleave</tt> is an ordinary procedure, so its
+arguments are evaluated right away, including the recursive call.  So
+there is an infinite recursion before any pairs are generated.  The
+book's version uses <tt>cons-stream</tt>, which is a special form, and so what
+looks like a recursive call actually isn't-at least not right away.
+
+<div class="p"><!----></div>
+But in principle Louis is right!  His procedure does correctly specify
+what the desired result should contain.  It fails because of a detail
+in the implementation of streams.  In a perfect world, a mathematically
+correct program such as Louis's version ought to work on the computer.
+
+<div class="p"><!----></div>
+In section 3.5.4 they solve a similar problem by
+making the stream programmer use explicit <tt>delay</tt> invocations.
+(You skipped over that section because it was about calculus.)
+Here's how Louis could use that technique:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (interleave-delayed s1 delayed-s2)
+  (if (stream-null? s1)
+      (force delayed-s2)
+      (cons-stream
+       (stream-car s1)
+       (interleave-delayed (force delayed-s2)
+			   (delay (stream-cdr s1))))))
+
+<div class="p"><!----></div>
+(define (pairs s t)
+  (interleave-delayed
+   (stream-map (lambda (x) (list (stream-car s) x)) t)
+   (delay (pairs (stream-cdr s) (stream-cdr t)))))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+This works, but it's far too horrible to contemplate; with this
+technique, the stream programmer has to check carefully every
+procedure to see what might need to be delayed explicitly.  This
+defeats the object of an abstraction.  The user should be able
+to write a stream program just as if it were a list program,
+without any idea of how streams are implemented!
+
+<div class="p"><!----></div>
+<b>Lazy evaluation: delay everything automatically</b>
+
+<div class="p"><!----></div>
+Back in chapter 1 we learned about <i>normal order evaluation</i>, in
+which argument subexpressions are not evaluated before calling a
+procedure.  In effect, when you type
+
+<div class="p"><!----></div>
+<tt>  <pre>(foo a b c)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+in a normal order evaluator, it's equivalent to typing
+
+<div class="p"><!----></div>
+<tt>  <pre>(foo (delay a) (delay b) (delay c))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+in ordinary (applicative order) Scheme.  If every argument is
+automatically delayed, then Louis's <tt>pairs</tt> procedure will
+work without adding explicit delays.
+
+<div class="p"><!----></div>
+Louis's program had explicit calls to <tt>force</tt> as well as
+explicit calls to <tt>delay</tt>.  If we're going to make this process
+automatic, when should we automatically force a promise?  The answer
+is that some primitives need to know the real values of their
+arguments, e.g., the arithmetic primitives.  And of course when
+Scheme is about to print the value of a top-level expression, we
+need the real value.
+
+<div class="p"><!----></div>
+<b>How do we modify the evaluator?</b>
+
+<div class="p"><!----></div>
+What changes must we make to the metacircular evaluator in order
+to get normal order?
+
+<div class="p"><!----></div>
+We've just said that the point at which we want to automatically
+delay a computation is when an expression is used as an argument
+to a procedure.  Where does the ordinary metacircular evaluator
+evaluate argument subexpressions?  In this excerpt from <tt>eval</tt>:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (eval exp env)
+  (cond ...
+	((application? exp)
+	 (apply (eval (operator exp) env)
+		(list-of-values (operands exp) env)))
+	...))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+It's <tt>list-of-values</tt> that recursively calls <tt>eval</tt> for each
+argument.  Instead we could make thunks:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (eval exp env)
+  (cond ...
+	((application? exp)
+	 (apply (ACTUAL-VALUE (operator exp) env)
+		(LIST-OF-DELAYED-VALUES (operands exp) env)))
+	...))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Two things have changed:
+
+<div class="p"><!----></div>
+1.  To find out what procedure to invoke, we use <tt>actual-value</tt>
+rather than <tt>eval</tt>.  In the normal order evaluator, what <tt>eval</tt>
+returns may be a promise rather than a final value; <tt>actual-value</tt>
+forces the promise if necessary.
+
+<div class="p"><!----></div>
+2.  Instead of <tt>list-of-values</tt> we call <tt>list-of-delayed-values</tt>.
+The ordinary version uses <tt>eval</tt> to get the value of each argument
+expression; the new version will use <tt>delay</tt> to make a list of
+thunks.  (This isn't quite true, and I'll fix it in a few paragraphs.)
+
+<div class="p"><!----></div>
+When do we want to force the promises?  We do it when calling a
+primitive procedure.  That happens in <tt>apply</tt>:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (apply procedure arguments)
+  (cond ((primitive-procedure? procedure)
+	 (apply-primitive-procedure procedure arguments))
+	...))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+We change it to force the arguments first:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (apply procedure arguments)
+  (cond ((primitive-procedure? procedure)
+	 (apply-primitive-procedure procedure (MAP FORCE ARGUMENTS)))
+	...))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Those are the crucial changes.  The book gives a few more details:
+Some special forms must force their arguments, and the read-eval-print
+loop must force the value it's about to print.
+
+<div class="p"><!----></div>
+<b>Reinventing <tt>delay</tt> and <tt>force</tt></b>
+
+<div class="p"><!----></div>
+I said earlier that I was lying about using <tt>delay</tt> to make thunks.
+The metacircular evaluator can't use Scheme's built-in <tt>delay</tt> because
+that would make a thunk in the underlying Scheme environment, and we want
+a thunk in the metacircular environment.  (This is one more example of
+the idea of level confusion.)  Instead, the book uses procedures
+<tt>delay-it</tt> and <tt>force-it</tt> to implement metacircular thunks.
+
+<div class="p"><!----></div>
+What's a thunk?  It's an expression and an environment in which we
+should later evaluate it.  So we make one by combining an expression
+with an environment:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (delay-it exp env)
+  (list 'thunk exp env))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+The rest of the implementation is straightforward.
+
+<div class="p"><!----></div>
+Notice that the
+<tt>delay-it</tt> procedure takes an environment as argument; this is
+because it's part of the implementation of the language, not a
+user-visible feature.  If, instead of a lazy evaluator, we wanted
+to add a <tt>delay</tt> special form to the ordinary metacircular
+evaluator, we'd do it by adding this clause to <tt>eval</tt>:
+
+<div class="p"><!----></div>
+<tt>  <pre>((delay? exp) (delay-it (cadr exp) env))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Here <tt>exp</tt> represents an expression like <tt>(delay&nbsp;foo)</tt> and
+so its <tt>cadr</tt> is the thing we really want to delay.
+
+<div class="p"><!----></div>
+The book's version of <tt>eval</tt> and <tt>apply</tt> in the lazy evaluator
+is a little different from what I've shown here.  My version makes
+thunks in <tt>eval</tt> and passes them to <tt>apply</tt>.  The book's
+version has <tt>eval</tt> pass the argument expressions to <tt>apply</tt>,
+without either evaluating or thunking them, and also passes the
+current environment as a third argument.  Then <tt>apply</tt> either
+evaluates the arguments (for primitives) or thunks them (for
+non-primitives).  Their way is more efficient, but I think this
+way makes the issues clearer because it's more nearly parallel to
+the division of labor between <tt>eval</tt> and <tt>apply</tt> in the
+vanilla metacircular evaluator.
+
+<div class="p"><!----></div>
+<b>Memoization</b>
+
+<div class="p"><!----></div>
+Why didn't we choose normal order evaluation for Scheme in the
+first place?  One reason is that it easily leads to redundant
+computations.  When we talked about it in chapter 1, I gave this
+example:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (square x) (* x x))
+
+<div class="p"><!----></div>
+(square (square (+ 2 3)))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+In a normal order evaluator, this adds 2 to 3 four times!
+
+<div class="p"><!----></div>
+<tt>  <pre>(square (square (+ 2 3)))  ==&#62;
+(* (square (+ 2 3)) (square (+ 2 3)))  ==&#62;
+(* (* (+ 2 3) (+ 2 3)) (* (+ 2 3) (+ 2 3)))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+The solution is memoization.  If we force the same thunk more
+than once, the thunk should remember its value from the first
+time and not have to repeat the computation.  (The four
+instances of <tt>(+&nbsp;2&nbsp;3)</tt> in the last line above are all
+the same thunk forced four times, not four separate thunks.)
+
+<div class="p"><!----></div>
+The details are straightforward; you can read them in the text.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<font face="symbol"></font
+> <b>Nondeterministic evaluator</b>
+
+<div class="p"><!----></div>
+To load the nondeterministic metacircular evaluator, say
+
+<div class="p"><!----></div>
+<tt>  <pre>(load "&#126;cs61a/lib/ambeval.scm")
+
+</pre></tt>
+
+<div class="p"><!----></div>
+<b>Solution spaces, streams, and backtracking</b>
+
+<div class="p"><!----></div>
+Many problems are of the form  "Find all A such that B" or
+"find an A such that B."  For example:  Find an even integer
+that is not the sum of two primes; find a set of integers
+a, b, c, and n such that a<sup>n</sup>+b<sup>n</sup>=c<sup>n</sup> and n &gt; 2.  (These
+problems might not be about numbers:  Find all the states in
+the United States whose first and last letters are the same.)
+
+<div class="p"><!----></div>
+In each case, the set A (even integers, sets of four integers,
+or states) is called the <i>solution space</i>.  The condition B
+is a predicate function of a potential solution that's true for
+actual solutions.
+
+<div class="p"><!----></div>
+One approach to solving problems of this sort is to represent
+the solution space as a stream, and use <tt>stream-filter</tt> to select
+the elements that satisfy the predicate:
+
+<div class="p"><!----></div>
+<tt>  <pre>(stream-filter sum-of-two-primes? even-integers)
+
+<div class="p"><!----></div>
+(stream-filter Fermat? (pairs (pairs integers integers)
+			      (pairs integers integers)))
+
+<div class="p"><!----></div>
+(stream-filter (lambda (x) (equal? (first x) (last x))) states)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+The stream technique is particularly elegant for infinite problem
+spaces, because the program seems to be generating the entire
+solution space A before checking the predicate B.  (Of course
+we know that really the steps of the computation are reordered
+so that the elements are tested as they are generated.)
+
+<div class="p"><!----></div>
+This week we consider a different way to express the same sort
+of computation, a way that makes the sequence of events in time
+more visible.  In effect we'll say:
+
+<div class="p"><!----></div>
+<font face="symbol"></font
+> Pick a possible solution.
+
+<div class="p"><!----></div>
+<font face="symbol"></font
+> See if it's really a solution.
+
+<div class="p"><!----></div>
+<font face="symbol"></font
+> If so, return it; if not, try another.
+
+<div class="p"><!----></div>
+Here's an example of the notation:
+
+<div class="p"><!----></div>
+<tt>  <pre>&#62; (let ((a (amb 2 3 4))
+	(b (amb 6 7 8)))
+    (require (= (remainder b a) 0))
+    (list a b))
+(2 6)
+&#62; try-again
+(2 8)
+&#62; try-again
+(3 6)
+&#62; try-again
+(4 8)
+&#62; try-again
+There are no more solutions.
+
+</pre></tt>
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+The main new thing here is the special form <tt>amb</tt>.  This is not
+part of ordinary Scheme!  We are adding it as a new feature in the
+metacircular evaluator.  <tt>Amb</tt> takes any number of argument
+expressions and returns the value of one of them.  You can think
+about this using either of two metaphors:
+
+<div class="p"><!----></div>
+<font face="symbol"></font
+> The computer clones itself into as many copies as there
+are arguments; each clone gets a different value.
+
+<div class="p"><!----></div>
+<font face="symbol"></font
+> The computer magically knows which argument will give rise
+to a solution to your problem and chooses that one.
+
+<div class="p"><!----></div>
+What really happens is that the evaluator chooses the first argument
+and returns its value, but if the computation later <i>fails </i> then
+it tries again with the second argument, and so on until there are no
+more to try.  This introduces another new idea:&nbsp;the possibility of
+the failure of a computation.  That's not the same thing as an error!
+Errors (such as taking the <tt>car</tt> of an empty list) are handled
+the same in this evaluator as in ordinary Scheme; they result in an
+error message and the computation stops.  A failure is different; it's
+what happens when you call <tt>amb</tt> with no arguments, or when all
+the arguments you gave have been tried and there are no more left.
+
+<div class="p"><!----></div>
+In the example above I used <tt>require</tt> to cause a failure of the
+computation if the condition is not met.  <tt>Require</tt> is a simple
+procedure in the metacircular Scheme-with-<tt>amb</tt>:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (require condition)
+  (if (not condition) (amb)))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+So here's the sequence of events in the computation above:
+
+<div class="p"><!----></div>
+<tt>  <pre>a=2
+    b=6; 6 is a multiple of 2, so return (2 6)
+
+<div class="p"><!----></div>
+[try-again]
+    b=7; 7 isn't a multiple of 2, so fail.
+    b=8; 8 is a multiple of 2, so return (2 8)
+
+<div class="p"><!----></div>
+[try-again]
+    No more values for b, so fail.
+a=3
+    b=6; 6 is a multiple of 3, so return (3 6)
+
+<div class="p"><!----></div>
+[try-again]
+    b=7; 7 isn't a multiple of 3, so fail.
+    b=8; 8 isn't a multiple of 3, so fail.
+    No more values for b, so fail.
+a=4
+    b=6; 6 isn't a multiple of 4, so fail.
+    b=7; 7 isn't a multiple of 4, so fail.
+    b=8; 8 is a multiple of 4, so return (4 8)
+
+<div class="p"><!----></div>
+[try-again]
+    No more values for b, so fail.
+No more values for a, so fail.
+(No more pending AMBs, so report failure to user.)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<b>Recursive <tt>Amb<!--hbox-->00</tt></b>
+
+<div class="p"><!----></div>
+Since <tt>amb</tt> accepts any argument expressions, not just literal
+values as in the example above, it can be used recursively:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (an-integer-between from to)
+  (if (&#62; from to)
+      (amb)
+      (amb from (an-integer-between (+ from 1) to))))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+or if you prefer:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (an-integer-between from to)
+  (require (&#62;= to from))
+  (amb from (an-integer-between (+ from 1) to)))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Further, since <tt>amb</tt> is a special form and only evaluates one
+argument at a time, it has the same delaying effect as <tt>cons-stream</tt>
+and can be used to make infinite solution spaces:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (an-integer-from from)
+  (amb from (an-integer-from (+ from 1))))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+This <tt>an-integer-from</tt> computation never fails-there is always
+another integer-and so it won't work to say
+
+<div class="p"><!----></div>
+<tt>  <pre>(let ((a (an-integer-from 1))
+      (b (an-integer-from 1)))
+  ...)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+because <tt>a</tt> will never have any value other than 1, because the
+second <tt>amb</tt> never fails.  This is analogous to the problem of
+trying to append infinite streams; in that case we could solve the
+problem with <tt>interleave</tt> but it's harder here.
+
+<div class="p"><!----></div>
+<b>Footnote on order of evaluation</b>
+
+<div class="p"><!----></div>
+In describing the sequence of events in these examples, I'm assuming
+that Scheme will evaluate the arguments of the unnamed procedure
+created by a <tt>let</tt> from left to right.  If I wanted to be sure
+of that, I should use <tt>let*</tt> instead of <tt>let</tt>.  But it matters
+only in my description of the sequence of events; considered
+abstractly, the program will behave correctly regardless of the
+order of evaluation, because all possible solutions will eventually
+be tried-although maybe not in the order shown here.
+
+<div class="p"><!----></div>
+<b>Success or failure</b>
+
+<div class="p"><!----></div>
+In the implementation of <tt>amb</tt>, the most difficult change to the
+evaluator is that any computation may either succeed or fail.  The
+most obvious way to try to represent this situation is to have <tt>eval</tt>
+return some special value, let's say the symbol failed=, if a
+computation fails.  (This is analogous to the use of no-value= in
+the Logo interpreter project.)  The trouble is that if an <tt>amb</tt> fails,
+we don't want to continue the computation; we want to "back up" to an
+earlier stage in the computation.  Suppose we are trying
+to evaluate an expression such as
+
+<div class="p"><!----></div>
+<tt>  <pre>(a (b (c (d 4))))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+and suppose that procedures <tt>b</tt> and <tt>c</tt> use <tt>amb</tt>.  Procedure
+<tt>d</tt> is actually invoked first; then <tt>c</tt> is invoked with the value
+<tt>d</tt> returned as argument.  The <tt>amb</tt> inside procedure <tt>c</tt>
+returns its first argument, and <tt>c</tt> uses that to compute a return
+value that becomes the argument to <tt>b</tt>.  Now suppose that the <tt>amb</tt>
+inside <tt>b</tt> fails.  We don't want to invoke <tt>a</tt> with the value
+failed= as its argument!  In fact we don't want to invoke <tt>a</tt>
+at all; we want to re-evaluate the body of <tt>c</tt> but using the second
+argument to its <tt>amb</tt>.
+
+<div class="p"><!----></div>
+A&amp;S take a different approach.  If an <tt>amb</tt> fails, they want to
+be able to jump right back to the previous <tt>amb</tt>, without having to
+propagate the failure explicitly through several intervening calls to
+<tt>eval</tt>.  To make this work, intuitively, we have to give <tt>eval</tt>
+two different places to return to when it's finished, one for a success
+and the other for a failure.
+
+<div class="p"><!----></div>
+<b>Continuations</b>
+
+<div class="p"><!----></div>
+Ordinarily a procedure doesn't think explicitly about where to return;
+it returns to its caller, but Scheme takes care of that automatically.
+For example, when we compute
+
+<div class="p"><!----></div>
+<tt>  <pre>(* 3 (square 5))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+the procedure <tt>square</tt> computes the value 25 and Scheme automatically
+returns that value to the <tt>eval</tt> invocation that's waiting to use
+it as an argument to the multiplication.  But we could tell <tt>square</tt>
+explicitly, "when you've figured out the answer, pass it on to be
+multiplied by 3" this way:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (square x continuation)
+  (continuation (* x x)))
+
+<div class="p"><!----></div>
+&#62; (square 5 (lambda (y) (* y 3)))
+75
+
+</pre></tt>
+
+<div class="p"><!----></div>
+A <i>continuation </i> is a procedure that takes your result as argument and says
+what's left to be done in the computation.
+
+<div class="p"><!----></div>
+<b>Continuations for success and failure</b>
+
+<div class="p"><!----></div>
+In the case of the nondeterministic evaluator, we give <tt>eval</tt> <i>two </i>
+continuations, one for success and one for failure.  Note that these
+continuations are part of the implementation of the evaluator; the user of
+<tt>amb</tt> doesn't deal explicitly with continuations.
+
+<div class="p"><!----></div>
+Here's a handwavy example.  In the case of
+
+<div class="p"><!----></div>
+<tt>  <pre>(a (b (c (d 4))))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+procedure <tt>b</tt>'s success continuation is something like
+
+<div class="p"><!----></div>
+<tt>  <pre>(lambda (value) (a value))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+but its failure continuation is
+
+<div class="p"><!----></div>
+<tt>  <pre>(lambda () (a (b (redo-amb-in-c))))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+This example is handwavy because these "continuations" are from the
+point of view of the user of the metacircular Scheme, who doesn't
+know anything about continuations, really.  The true continuations
+are written in underlying Scheme, as part of the evaluator itself.
+
+<div class="p"><!----></div>
+If a computation fails, the most recent <tt>amb</tt> wants to try another
+value.  So a continuation failure will redo the <tt>amb</tt> with one
+fewer argument.  There's no information that the failing computation
+needs to send back to that <tt>amb</tt> except for the fact of failure
+itself, so the failure continuation procedure needs no arguments.
+
+<div class="p"><!----></div>
+On the other hand, if the computation succeeds, we have to carry out
+the success continuation, and that continuation needs to know the
+value that we computed.  It also needs to know what to do if the
+continuation itself fails; most of the time, this will be the same
+as the failure continuation we were given, but it might not be.
+So a success continuation must be a procedure that takes two
+arguments: a value and a failure continuation.
+
+<div class="p"><!----></div>
+The book bases the nondeterministic evaluator on the analyzing one, but
+I'll use a simplified version based on plain old eval (it's in
+<tt>&nbsp;cs61a/lib/vambeval.scm</tt>).
+
+<div class="p"><!----></div>
+Most kinds of evaluation always succeed, so they invoke their success
+continuation and pass on the failure one.  I'll start with a too-simplified
+version of <tt>eval-if</tt> in this form:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (eval-if exp env succeed fail)           ; WRONG!
+  (if (eval (if-predicate exp) env succeed fail)
+      (eval (if-consequent exp) env succeed fail)
+      (eval (if-alternative exp) env succeed fail)))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+The trouble is, what if the evaluation of the predicate fails?
+We don't then want to evaluate the consequent or the alternative.
+So instead, we just evaluate the predicate, giving it a success
+continuation that will evaluate the consequent or the alternative,
+supposing that evaluating the predicate succeeds.
+
+<div class="p"><!----></div>
+In general, wherever the ordinary metacircular evaluator would say
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (eval-foo exp env)
+   (eval step-1 env)
+   (eval step-2 env))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+using <tt>eval</tt> twice for part of its work, this version has to
+<tt>eval</tt> the first part with a continuation that <tt>eval</tt>s
+the second part:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (eval-foo exp env succeed fail)
+  (eval step-1
+	env
+	(lambda (value-1 fail-1)
+	  (eval step-2 env succeed fail-1))
+	fail))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+(In either case, <tt>step-2</tt> presumably uses the result of
+evaluating <tt>step-1</tt> somehow.)
+
+<div class="p"><!----></div>
+Here's how that works out for <tt>if</tt>:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (eval-if exp env succeed fail)
+  (eval (if-predicate exp)            ; test the predicate
+	env
+	(lambda (pred-value fail2)    ; with this success continuation
+	  (if (true? pred-value)
+	      (eval (if-consequent exp) env succeed fail2)
+	      (eval (if-alternative exp) env succeed fail2)))
+	fail))                        ; and the same failure continuation
+
+</pre></tt>
+
+<div class="p"><!----></div>
+What's <tt>fail2</tt>?  It's the failure continuation that the evaluation
+of the predicate will supply.  Most of the time, that'll be the same
+as our own failure continuation, just as <tt>eval-if</tt> uses <tt>fail</tt>
+as the failure continuation to pass on to the evaluation of the predicate.
+But if the predicate involves an <tt>amb</tt> expression, it will generate
+a new failure continuation.  Think about an example like this one:
+
+<div class="p"><!----></div>
+<tt>  <pre>&#62; (if (amb #t #f)
+      (amb 1)
+      (amb 2))
+1
+
+<div class="p"><!----></div>
+&#62; try-again
+2
+
+</pre></tt>
+
+<div class="p"><!----></div>
+(A more realistic example would have the predicate expression be some
+more complicated procedure call that had an <tt>amb</tt> in its body.)
+The first thing that happens is that the first <tt>amb</tt> returns <tt>#t</tt>,
+and so <tt>if</tt> evaluates its second argument, and that second <tt>amb</tt>
+returns 1.  When the user says to try again, there are no more values
+for that <tt>amb</tt> to return, so it fails.  What we must do is re-evaluate
+the first <tt>amb</tt>, but this time returning its second argument, <tt>#f</tt>.
+By now you've forgotten that we're trying to work out what <tt>fail2</tt> is
+for in <tt>eval-if</tt>, but this example shows why the failure continuation
+when we evaluate <tt>if-consequent</tt> (namely the <tt>(amb&nbsp;1)</tt> expression)
+has to be different from the failure continuation for the entire <tt>if</tt>
+expression.  If the entire <tt>if</tt> fails (which will happen if we say
+<tt>try-again</tt> again) then its failure continuation will tell us that
+there are no more values.  That continuation is bound to the name <tt>fail</tt>
+in <tt>eval-if</tt>.  What ends up bound to the name <tt>fail2</tt> is the
+continuation that re-evaluates the predicate <tt>amb</tt>.
+
+<div class="p"><!----></div>
+How does <tt>fail2</tt> get that binding?  When <tt>eval-if</tt> evaluates the
+predicate, which turns out to be an <tt>amb</tt> expression, <tt>eval-amb</tt>
+will evaluate whatever argument it's up to, but with a new failure
+continuation:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (eval-amb exp env succeed fail)
+  (if (null? (cdr exp))             ; (car exp) is the word AMB
+      (fail)                        ; no more args, call failure cont.
+      (eval (cadr exp)              ; Otherwise evaluate the first arg
+	    env
+	    succeed                 ; with my same success continuation
+	    (lambda ()              ; but with a new failure continuation:
+	      (eval-amb (cons 'amb (cddr exp))    ; try the next argument
+			env
+			succeed
+			fail)))))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Notice that <tt>eval-if</tt>, like most other cases, provides a new
+success continuation but passes on the same failure continuation
+that it was given as an argument.  But <tt>eval-amb</tt> does the
+opposite:  It passes on the same success continuation it was given,
+but provides a new failure continuation.
+
+<div class="p"><!----></div>
+Of course there are a gazillion more details, but the book
+explains them, once you understand what a continuation is.
+The most important of these complications is that anything involving
+mutation is problematic.  If we say
+
+<div class="p"><!----></div>
+<tt>  <pre>(define x 5)
+(set! x (+ x (amb 2 3)))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+it's clear that the first time around <tt>x</tt> should end up with
+the value 7 (5+2).  But if we try again, we'd like <tt>x</tt> to get
+the value 8 (5+3), not 10 (7+3).  So <tt>set!</tt>&nbsp;must set up
+a failure continuation that undoes the change in the binding of <tt>x</tt>,
+restoring its original value of 5, before letting the <tt>amb</tt>
+provide its second argument.
+
+<div class="p"><!----></div>
+Note: The second part of programming project 4 is this week.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>

@@ -1,0 +1,862 @@
+<b>CS 61A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Lecture Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Week 12</b>
+<div class="p"><!----></div>
+Topic: Metacircular evaluator
+<div class="p"><!----></div>
+<b>Reading:</b>
+Abelson &amp; Sussman, Section 4.1
+<div class="p"><!----></div>
+<b>Midterm 3 is this week.</b>
+
+<div class="p"><!----></div>
+We're going to investigate SICP's Scheme interpreter written in Scheme.  This
+interpreter implements the environment model of evaluation.
+
+<div class="p"><!----></div>
+Here's a reminder of the reasons I mentioned in week 6 for studying a
+Scheme interpreter in Scheme, even though it's obviously not something
+you'd use in practice:
+
+<div class="p"><!----></div>
+
+<dl compact="compact">
+ <dt>
+<font face="symbol"></font
+></dt>
+<dd>
+It helps you understand the environment model.
+</dd>
+ <dt>
+<font face="symbol"></font
+></dt>
+<dd>It lets us experiment with modifications to Scheme (new features).
+</dd>
+ <dt>
+<font face="symbol"></font
+></dt>
+<dd>Even real Scheme interpreters are largely written in Scheme.
+</dd>
+ <dt>
+<font face="symbol"></font
+></dt>
+<dd>It illustrates a big idea:&nbsp;<i>universality</i>.
+</dd></dl>
+Universality means we can write <i>one program </i> that's equivalent to all
+other programs.  At the hardware level, this is the idea that made
+general-purpose computers possible.  It used to be that they built a
+separate machine, from scratch, for every new problem.  An intermediate
+stage was a machine that had a <i>patchboard </i> so you could rewire it,
+effectively changing it into a different machine for each problem, without
+having to re-manufacture it.  The final step was a single machine that
+accepted a program <i>as data </i> so that it can do any problem without
+rewiring.
+
+<div class="p"><!----></div>
+Instead of a function machine that computes a particular function, taking
+(say) a number in the input hopper and returning another number out the
+bottom, we have a <i>universal </i> function machine that takes <i>a
+function machine </i> in one input hopper, and a number in a second hopper,
+and returns whatever number the input machine would have returned.  This is
+the ultimate in data-directed programming.
+
+<div class="p"><!----></div>
+Our Scheme interpreter leaves out some of the important components of a real
+one.  It gets away with this by taking advantage of the capabilities of the
+underlying Scheme.  Specifically, we don't deal with storage allocation,
+tail recursion elimination, or implementing any of the Scheme primitives.
+All we <i>do </i> deal with is the evaluation of expressions.  That turns
+out to be quite a lot in itself, and pretty interesting.
+
+<div class="p"><!----></div>
+<table border="0"><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="note-figs/12-1.eps">Figure</a>
+
+</td></tr></table><!--vbox-->
+<div class="p"><!----></div>
+Here is a one-screenful version of the metacircular evaluator with most of
+the details left out.  You might want to compare it to the one-screenful
+substitution-model interpreter you saw in week 6.
+
+<div class="p"><!----></div>
+<tt>  <pre>;;;;;                        In file cs61a/lectures/4.1/micro.scm
+(define (scheme)
+  (display &#187; ")
+  (print (eval (read) the-global-environment))
+  (scheme) )
+
+<div class="p"><!----></div>
+(define (eval exp env)
+  (cond ((self-evaluating? exp) exp)
+        ((symbol? exp) (lookup-in-env exp env))
+        ((special-form? exp) (do-special-form exp env))
+        (else (apply (eval (car exp) env)
+                     (map (lambda (e) (eval e env)) (cdr exp)) ))))
+
+<div class="p"><!----></div>
+(define (apply proc args)
+  (if (primitive? proc)
+      (do-magic proc args)
+      (eval (body proc)
+            (extend-environment (formals proc)
+                                args
+                                (proc-env proc) ))))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Although the version in the book is a lot bigger, this really does capture
+the essential structure, namely, a mutual recursion between <tt>eval</tt>
+(evaluate an expression relative to an environment) and <tt>apply</tt> (apply a
+function to arguments).  To evaluate a compound expression means to evaluate
+the subexpressions recursively, then apply the <tt>car</tt> (a function) to the
+<tt>cdr</tt> (the arguments).  To apply a function to arguments means to
+evaluate the body of the function in a new environment.
+
+<div class="p"><!----></div>
+What's left out?  Primitives, special forms, and a lot of details.
+
+<div class="p"><!----></div>
+In that other college down the peninsula, they wouldn't consider you ready
+for an interpreter until junior or senior year.  At this point in the
+introductory course, they'd still be teaching you where the semicolons go.
+How do we get away with this?  We have two big advantages:
+
+<div class="p"><!----></div>
+
+<dl compact="compact">
+ <dt>
+<font face="symbol"></font
+></dt>
+<dd>
+The <i>source language </i> (the language that we're interpreting) is
+simple and uniform.  Its entire formal syntax can be described in one page,
+as we did in week 7.  There's hardly anything to implement!
+</dd>
+ <dt>
+<font face="symbol"></font
+></dt>
+<dd>The <i>implementation language </i> (the one in which the interpreter
+itself is written) is powerful enough to handle a program as data, and to
+let us construct data structures that are both hierarchical and circular.
+</dd></dl>
+The amazing thing is that the simple source language and the powerful
+implementation language are both Scheme!  You might think that a powerful
+language has to be complicated, but it's not so.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<font face="symbol"></font
+> Introduction to Logo.  For the programming project you're turning
+the metacircular evaluator into an interpreter for a <i>different </i>
+language, Logo.  To do that you should know a little about Logo itself.
+
+<div class="p"><!----></div>
+Logo is a dialect of Lisp, just as Scheme is, but its design has different
+priorities.  The goal was to make it as natural-seeming as possible for
+kids. That means things like getting rid of all those parentheses, and that
+has other syntactic implications.
+
+<div class="p"><!----></div>
+(To demonstrate Logo, run <tt>&#126;cs61a/logo</tt> which is Berkeley Logo.)
+
+<div class="p"><!----></div>
+Commands and operations:  In Scheme, every procedure returns a value, even
+the ones for which the value is unspecified and/or useless, like <tt>
+define</tt> and <tt>print</tt>.  In Logo, procedures are divided into operations,
+which return values, and commands, which don't return values but are called
+for their effect.  You have to start each instruction with a command:
+
+<div class="p"><!----></div>
+<tt>  <pre>print sum 2 3
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Syntax:  If parentheses aren't used to delimit function calls, how do you
+know the difference between a function and an argument?  When a symbol is
+used without punctuation, that means a function call.  When you want the
+value of a variable to use as an argument, you put colon in front of it.
+
+<div class="p"><!----></div>
+<tt>  <pre>make "x 14
+print :x
+print sum :x :x
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Words are quoted just as in Scheme, except that the double-quote character
+is used instead of single-quote.  But since expressions aren't represented
+as lists, the same punctuation that delimits a list also quotes it:
+
+<div class="p"><!----></div>
+<tt>  <pre>print [a b c]
+
+</pre></tt>
+
+<div class="p"><!----></div>
+(Parentheses <i>can </i> be used, as in Scheme, if you want to give extra
+arguments to something, or indicate infix precedence.)
+
+<div class="p"><!----></div>
+<tt>  <pre>print (sum 2 3 4 5)
+print 3*(4+5)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+No special forms:  Except <tt>to</tt>, the thing that defines a new procedure,
+all Logo primitives evaluate their arguments.  How is this possible?  We
+"proved" back in chapter 1 that <tt>if</tt> has to be a special form.  But
+instead we just quote the arguments to <tt>ifelse</tt>:
+
+<div class="p"><!----></div>
+<tt>  <pre>ifelse 2=3 [print "hi] [print "bye]
+
+</pre></tt>
+
+<div class="p"><!----></div>
+You don't notice the quoting since you get it for free with the list
+grouping.
+
+<div class="p"><!----></div>
+Functions not first class:  In Logo every function has a name; there's no
+<tt>lambda</tt>.  Also, the namespace for functions is separate from the one
+for variables; a variable can't have a function as its value.  (This is
+convenient because we can use things like <tt>list</tt> or <tt>sentence</tt> as
+formal parameters without losing the functions by those names.)  That's
+another reason why you need colons for variables.
+
+<div class="p"><!----></div>
+So how do you write higher-order functions like <tt>map</tt>?  Two answers.
+First, you can use the <i>name </i> of a function as an argument, and you
+can use that name to construct an expression and eval it with <tt>run</tt>.
+Second, Logo has first-class <i>expressions </i>; you can <tt>run</tt> a list
+that you get as an argument.  (This raises issues about the scope of
+variables that we'll explore later this week.)
+
+<div class="p"><!----></div>
+<tt>  <pre>print map "first [the rain in spain]
+print map [? * ?] [3 4 5 6]
+
+</pre></tt>
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<font face="symbol"></font
+> Data abstraction in the evaluator.  Here is a quote from the
+Instructor's Manual, regarding section 4.1.2:
+
+<div class="p"><!----></div>
+"Point out that this section is boring (as is much of section 4.1.3), and
+explain why:  Writing the selectors, constructors, and predicates that
+implement a representation is often uninteresting.  It is important to say
+explicitly what you expect to be boring and what you expect to be
+interesting so that students don't ascribe their boredom to the wrong aspect
+of the material and reject the interesting ideas.  For example, data
+abstraction isn't boring, although writing selectors is.  The details of
+representing expressions (as given in section 4.1.2) and environments (as
+given in section 4.1.3) are mostly boring, but the evaluator certainly
+isn't."
+
+<div class="p"><!----></div>
+I actually think they go overboard by having a separate ADT for every kind
+of homogeneous sequence.  For example, instead of <tt>first-operand</tt> and
+<tt>rest-operands</tt> I'd just use <tt>first</tt> and <tt>rest</tt> for all
+sequences.  But things like <tt>operator</tt> and <tt>operands</tt> make sense.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<font face="symbol"></font
+> Dynamic scope.
+Logo uses dynamic scope, which we discussed in Section 3.2, instead
+of Scheme's lexical scope.  There are advantages and disadvantages to both
+approaches.
+
+<div class="p"><!----></div>
+Summary of arguments for lexical scope:
+
+<div class="p"><!----></div>
+
+<dl compact="compact">
+ <dt>
+<font face="symbol"></font
+></dt>
+<dd>
+Allows local state variables (OOP).
+</dd>
+ <dt>
+<font face="symbol"></font
+></dt>
+<dd>Prevents name "capture" bugs.
+</dd>
+ <dt>
+<font face="symbol"></font
+></dt>
+<dd>Faster compiled code.
+</dd></dl>
+Summary of arguments for dynamic scope:
+
+<div class="p"><!----></div>
+
+<dl compact="compact">
+ <dt>
+<font face="symbol"></font
+></dt>
+<dd>
+Allows first-class expressions (WHILE).
+</dd>
+ <dt>
+<font face="symbol"></font
+></dt>
+<dd>Easier debugging.
+</dd>
+ <dt>
+<font face="symbol"></font
+></dt>
+<dd>Allows "semi-global" variables.
+</dd></dl>
+Lexical scope is required in order to make possible Scheme's approach to
+local state variables.  That is, a procedure that has a local state variable
+must be defined within the scope where that variable is created, and must
+carry that scope around with it.  That's exactly what lexical scope
+accomplishes.
+
+<div class="p"><!----></div>
+On the other hand, (1) most lexically scoped languages (e.g., Pascal) don't
+have <tt>lambda</tt>, and so they can't give you local state variables despite
+their lexical scope.  And (2) lexical scope is needed for local state
+variables only if you want to implement the latter in the particular way
+that we've used.  Object Logo, for example, provides OOP without relying on
+<tt>lambda</tt> because it includes local state variables as a primitive
+feature.
+
+<div class="p"><!----></div>
+Almost all computer scientists these days hate dynamic scope, and the reason
+they give is the one about name captures.  That is, suppose we write
+procedure P that refers to a global variable V.  Example:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (area rad)
+  (* pi rad rad))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+This is intended as a reference to a global variable <tt>pi</tt> whose value,
+presumably, is 3.141592654.  But suppose we invoke it from within another
+procedure like this:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (mess-up pi)
+  (area (+ pi 5)))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+If we say <tt>(mess-up&nbsp;4)</tt> we intend to find the area of a circle with
+radius 9.  But we won't get the right area if we're using dynamic scope,
+because the name <tt>pi</tt> in procedure <tt>area</tt> suddenly refers to the
+local variable in <tt>mess-up</tt>, rather than to the intended global value.
+
+<div class="p"><!----></div>
+This argument about naming bugs is particularly compelling to people who
+envision a programming project in which 5000 programmers work on tiny
+slivers of the project, so that nobody knows what anyone else is doing.
+In such a situation it's entirely likely that two programmers will happen to
+use the same name for different purposes.  But note that we had to do
+something pretty foolish-using the name <tt>pi</tt> for something that isn't
+<font face="symbol">p</font
+> at all-in order to get in trouble.
+
+<div class="p"><!----></div>
+Lexical scope lets you write compilers that produce faster executable
+programs, because with lexical scope you can figure out during compilation
+exactly where in memory any particular variable reference will be.  With
+dynamic scope you have to defer the name-location correspondence until the
+program actually runs.  This is the real reason why people prefer lexical
+scope, despite whatever they say about high principles.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+As an argument for dynamic scope, consider this Logo implementation of the
+<tt>while</tt> control structure:
+
+<div class="p"><!----></div>
+<tt>  <pre>to while :condition :action
+if not run :condition [stop]
+run :action
+while :condition :action
+end
+
+<div class="p"><!----></div>
+to example :x
+while [:x &#62; 0] [print :x make "x :x-1]
+end
+
+<div class="p"><!----></div>
+? example 3
+3
+2
+1
+
+</pre></tt>
+
+<div class="p"><!----></div>
+This wouldn't work with lexical scope, because within the procedure <tt>
+while</tt> we couldn't evaluate the argument expressions, because the variable
+<tt>x</tt> is not bound in any environment lexically surrounding <tt>while</tt>.
+Dynamic scope makes the local variables of <tt>example</tt> available to <tt>
+while</tt>.  That in turn allows first-class expressions.  (That's what Logo
+uses in place of first-class functions.)
+
+<div class="p"><!----></div>
+There are ways to get around this limitation of lexical scope.  If you
+wanted to write <tt>while</tt> in Scheme, basically, you'd have to make it a
+special form that turns into something using thunks.  That is, you'd have
+to make
+
+<div class="p"><!----></div>
+<tt>  <pre>(while cond act)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+turn into
+
+<div class="p"><!----></div>
+<tt>  <pre>(while-helper (lambda () cond) (lambda () act))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+But the Logo point of view
+is that it's easier for a beginning programmer to understand first-class
+expressions than to understand special forms and thunks.
+
+<div class="p"><!----></div>
+Most Scheme implementations include a debugger that allows you to examine
+the values of variables after an error.  But, because of the complexity of
+the scope rules, the debugging language isn't Scheme itself.  Instead you
+have to use a special language with commands like "switch to the
+environment of the procedure that called this one." In Logo, when an error
+happens you can <i>pause </i> your program and type ordinary Logo
+expressions in an environment in which all the relevant variables are
+available.  For example, here is a Logo program:
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<tt>  <pre>;;;;;                        In file cs61a/lectures/4.1/bug.logo
+to assq :thing :list
+if equalp :thing first first :list [op last first :list]
+op assq :thing bf :list
+end
+
+<div class="p"><!----></div>
+to spell :card
+pr (se assq bl :card :ranks &#246;f assq last :card :suits)
+end
+
+<div class="p"><!----></div>
+to hand :cards
+if emptyp :cards [stop]
+spell first :cards
+hand bf :cards
+end
+
+<div class="p"><!----></div>
+make "ranks [[a ace] [2 two] [3 three] [4 four] [5 five] [6 six] [7 seven]
+             [8 eight] [9 nine] [10 ten] [j jack] [q queen] [k king]]
+make &#223;uits [[h hearts] [s spades] [d diamonds] [c clubs]]
+
+<div class="p"><!----></div>
+? hand [10h 2d 3s]
+TEN OF HEARTS
+TWO OF DIAMONDS
+THREE OF SPADES
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Suppose we introduce an error into <tt>hand</tt> by changing the recursive call
+to
+
+<div class="p"><!----></div>
+<tt>  <pre>hand first bf :cards
+
+</pre></tt>
+
+<div class="p"><!----></div>
+The result will be an error message in <tt>assq</tt>-two procedure calls
+down-complaining about an empty argument to <tt>first</tt>.  Although the
+error is caught in <tt>assq</tt>, the real problem is in <tt>hand</tt>.  In Logo
+we can say <tt>pons</tt>, which stands for "print out names," which means to
+show the values of <i>all </i> variables accessible at the moment of the
+error.  This will include the variable <tt>cards</tt>, so we'll see that the
+value of that variable is a single card instead of a list of cards.
+
+<div class="p"><!----></div>
+Finally, dynamic scope is useful for allowing "semi-global" variables.
+Take the metacircular evaluator as an example.  Lots of procedures in it
+require <tt>env</tt> as an argument, but there's nothing special about the
+value of <tt>env</tt> in any one of those procedures.  It's almost always just
+the current environment, whatever that happens to be.  If Scheme had dynamic
+scope, <tt>env</tt> could be a parameter of <tt>eval</tt>, and it would then
+automatically be available to any subprocedure called, directly or
+indirectly, by <tt>eval</tt>.  (This is the flip side of the name-capturing
+problem; in this case we <i>want </i> <tt>eval</tt> to capture the name <tt>
+env</tt>.)
+
+<div class="p"><!----></div>
+<font face="symbol"></font
+> Environments as circular lists.  When we first saw circular lists
+in chapter 2, they probably seemed to be an utterly useless curiosity,
+especially since you can't print one.  But in the MC evaluator, every
+environment is a circular list, because the environment contains procedures
+and each procedure contains a pointer to the environment in which it's
+defined.  So, moral number 1 is that circular lists are useful; moral number
+2 is not to try to trace a procedure in the evaluator that has an
+environment as an argument!  The tracing mechanism will take forever to try
+to print the circular argument list.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<b><font face="symbol"></font
+> Mapreduce part 2</b>
+
+<div class="p"><!----></div>
+Here's the diagram of mapreduce again:
+
+<div class="p"><!----></div>
+
+<table align="center" border="0"><tr><td>
+<a href="mr.eps">Figure</a></td></tr></table><!--hboxt-->
+
+<div class="p"><!----></div>
+The seemingly unpoetic names <tt>f1</tt> and <tt>f2</tt> serve to remind you of two
+things: <tt>f1</tt> (the mapper) is used before <tt>f2</tt> (the reducer), and <tt>
+f1</tt> takes one argument while <tt>f2</tt> takes two arguments (just like the
+functions used with ordinary <tt>map</tt> and <tt>accumulate</tt> respectively).
+
+<div class="p"><!----></div>
+
+<table align ="left" border="0" width="100%"><tr><td>
+mapper:&nbsp;&nbsp;<tt>kv-pair</tt>&nbsp;&nbsp;<font face="symbol"></font
+>&nbsp;&nbsp;<tt>
+list-of-kv-pairs</tt></td><td align="right"></td></tr></table><!--hbox-->
+<br clear="all" />
+<div class="p"><!----></div>
+<table align ="left" border="0" width="100%"><tr><td>
+reducer:&nbsp;&nbsp;<tt>value</tt>, <tt>partial-result</tt>&nbsp;&nbsp;<font face="symbol"></font
+>&nbsp;&nbsp;<tt>
+result</tt></td><td align="right"></td></tr></table><!--hbox-->
+<br clear="all" /><b>All data are in the form of key-value pairs.</b> Ordinary <tt>map</tt> doesn't
+care what the elements of the data list argument are, but <tt>mapreduce</tt>
+works only with data each of which is a key-value pair.  In the Scheme
+interface to the distributed filesystem, a file is a stream.  Every element of
+the file stream represents one line of the file, using a key-value pair whose
+key is the filename and whose value is a list of words, representing the text
+of the line.  The <tt>cdr</tt> of a file stream is a promise to ask the
+distributed filesystem for the next line.
+
+<div class="p"><!----></div>
+<b>Each processor runs a separate <tt>stream-map</tt>.</b>  The overlapping squares
+at the left of the mapreduce picture represent an entire stream.  (How is a
+large distributed file divided among map processes?  It doesn't really matter,
+as far as the <tt>mapreduce</tt> user is concerned; <tt>mapreduce</tt> tries to do
+it as efficiently as possible given the number of processes and the location
+of the data in the filesystem.)  The entire stream is the input to a <tt>map</tt>
+process; each element of the stream (a kv-pair) is the input to your mapper
+function <tt>f1</tt>.
+
+<div class="p"><!----></div>
+<b>For each key-value pair in the input stream, the mapper returns a
+<u>list</u> of key-value pairs.</b> In the simplest case, each of these lists
+will have one element; the code will look something like
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (my-mapper input-kv-pair)
+  (list (make-kv-pair ... ...)))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+The interface requires that you return a list to allow for the non-simplest
+cases: (1) Each input key-value pair may give rise to more than one output
+key-value pair.  For example, you may want an output key-value pair for each
+<i>word </i> of the input file, whereas the input key-value pair represents an
+entire line:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (my-mapper input-kv-pair)
+  (map (lambda (wd) (make-kv-pair ... ...))
+       (kv-value input-kv-pair)))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+(2) There are <i>three </i> commonly used higher order functions
+for sequential data, <tt>map</tt>, <tt>accumulate</tt>/<tt>reduce</tt>, and <tt>
+filter</tt>.  The way <tt>mapreduce</tt> handles the sort of problem for which <tt>
+filter</tt> would ordinarily be used is to allow a mapper to return an empty list
+if this particular key-value pair shouldn't contribute to the result:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (my-mapper input-kv-pair)
+  (if ...
+      (list input-kv-pair)
+      '()))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Of course it's possible to write mapper functions that combine these three
+patterns for more complicated tasks.
+
+<div class="p"><!----></div>
+The keys in the kv-pairs returned by the mapper need not be the same as the
+key in the input kv-pair.
+
+<div class="p"><!----></div>
+<b>Instead of one big accumulation, there's a separate accumulation of
+values for each key.</b> The non-parallel computation in the left half of the
+picture has two steps, a <tt>map</tt> and an <tt>accumulate</tt>.  But the <tt>
+mapreduce</tt> computation has <i>three </i> steps; the middle step sorts all the
+key-value pairs produced by all the mapper processes by their keys, and
+combines all the kv-pairs with the same key into a single aggregate structure,
+which is then used as the input to a <tt>reduce</tt> process.
+
+<div class="p"><!----></div>
+<i>This is why the use of key-value pairs is important! </i> If the data had
+no such structure imposed on them, there would be no way for us to tell
+<tt>mapreduce</tt> which data should be combined in each reduction.
+
+<div class="p"><!----></div>
+Although it's shown as one big box, the sort is also done in parallel; it's a
+"bucket sort," in which each <tt>map</tt> process is responsible for sending
+each of its output kv-pairs to the proper <tt>reduce</tt> process.  (Don't be
+confused; your mapper function doesn't have to do that.  The <tt>mapreduce</tt>
+program takes care of it.)
+
+<div class="p"><!----></div>
+Since all the data seen by a single <tt>reduce</tt> process have the same key,
+the reducer doesn't deal with keys at all.  This is important because it
+allows us to use simple reducer functions such as <tt>+</tt>, <tt>*</tt>, <tt>max</tt>,
+etc.  The Scheme interface to <tt>mapreduce</tt> recognizes the special cases of
+<tt>cons</tt> and <tt>cons-stream</tt> as reducers and does what you intend, even
+though it wouldn't actually work without this special handling, both because
+<tt>cons-stream</tt> is a special form and because the iterative implementation
+of <tt>mapreduce</tt> would do the combining in the wrong order.
+
+<div class="p"><!----></div>
+In the underlying <tt>mapreduce</tt> software, each <tt>reduce</tt> process leaves
+its results in a separate file, stored on the particular processor that ran
+the process.  But the Scheme interface to <tt>mapreduce</tt> returns a single
+value, a stream that effectively merges the results from all the
+<tt>reduce</tt> processes.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<b>Running mapreduce:</b> The <tt>mapreduce</tt> function is not available on the
+standard lab machines.  You must connect to the machine that controls the
+parallel cluster.  To do this, from the Unix shell you say this:
+
+<div class="p"><!----></div>
+<tt>  <pre>ssh icluster1.eecs.berkeley.edu
+
+</pre></tt>
+
+<div class="p"><!----></div>
+If you're at home, rather than in the lab, you'll have to provide your class
+login to the <tt>ssh</tt> command:
+
+<div class="p"><!----></div>
+<tt>  <pre>ssh cs61a-XY@icluster.eecs.berkeley.edu
+
+</pre></tt>
+
+<div class="p"><!----></div>
+replacing <tt>XY</tt> above with your login account.  <tt>Ssh</tt> will ask for your
+password, which is the same on the parallel cluster as for your regular class
+account.  Once you are logged into <tt>icluster1</tt>, you can run <tt>stk</tt> as
+usual, but <tt>mapreduce</tt> will be available:
+
+<div class="p"><!----></div>
+<tt>  <pre>(mapreduce mapper reducer reducer-base-case filename-or-special-stream)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+The first three arguments are the mapper function for the <tt>map</tt> phase,
+and the reducer function and starting value for the <tt>reduce</tt> phase.  The
+last argument is the data input to the <tt>map</tt>, but it is restricted to
+be either a distributed filesystem folder, which must be one of these:
+
+<div class="p"><!----></div>
+<tt>  <pre>"/beatles-songs"         <span class="roman">This one is small and has all Beatles song names</span><!--hbox-->
+"/gutenberg/shakespeare" <span class="roman">The collected works of William Shakespeare</span><!--hbox-->
+"/gutenberg/dickens"     <span class="roman">The collected works of Charles Dickens</span><!--hbox-->
+"/sample-emails"         <span class="roman">Some sample email data for the homework</span><!--hbox-->
+"/large-emails"          <span class="roman">A much larger sample email dataset. Use this only</span><!--hbox-->
+                         <span class="roman">if you're willing to wait a while.</span><!--hbox-->
+
+</pre></tt>
+
+<div class="p"><!----></div>
+(the quotation marks above are required), or the stream returned by an earlier
+call to <tt>mapreduce</tt>.  (Streams you make yourself with <tt>cons-stream</tt>,
+etc., can't be used.)  Some problems are solved with two <tt>mapreduce</tt>
+passes, like this:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define intermediate-result (mapreduce ...))
+(mapreduce ... intermediate-result)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+(Yes, you could just use one <tt>mapreduce</tt> call directly as the argument to
+the second <tt>mapreduce</tt> call, but in practice you'll want to use
+<tt>show-stream</tt> to examine the intermediate result first, to make sure the
+first call did what you expect.)
+
+<div class="p"><!----></div>
+Here's a sample.  We provide a file of key-value pairs in which the key is
+the name of a Beatles album and the value is the name of a song on that album.
+Suppose we want to know how many times each word appears in the name of a
+song:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (wordcount-mapper document-line-kv-pair)
+  (map (lambda (wd-in-line) (make-kv-pair wd-in-line 1))
+       (kv-value document-line-kv-pair)))
+
+<div class="p"><!----></div>
+(define wordcounts (mapreduce wordcount-mapper + 0 "/beatles-songs"))
+
+<div class="p"><!----></div>
+&#62; (ss wordcounts)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+The argument to <tt>wordcount-mapper</tt> will be a key-value pair whose key is
+an album name, and whose value is a song name.  (In other examples, the key
+will be a filename, such as the name of a play by Shakespeare, and the value
+will be a line from the play.)  We're interested only in the song names, so
+there's no call to <tt>kv-key</tt> in the procedure.  For each song name, we
+generate a list of key-value pairs in which the key is a word in the name and
+the value is 1.  This may seem silly, having the same value in every pair,
+but it means that in the <tt>reduce</tt> stage we can just use <tt>+</tt> as the
+reducer, and it'll add up all the occurrences of each word.
+
+<div class="p"><!----></div>
+You'll find the running time disappointing in this example; since the number
+of Beatles songs is pretty small, the same computation could be done faster on
+a single machine.  This is because there is a significant setup time both
+for <tt>mapreduce</tt> itself and for the <tt>stk</tt> interface.  Since your mapper
+and reducer functions have to work when run on parallel machines, your Scheme
+environment must be shipped over to each of those machines before the
+computation begins, so that bindings are available for any free references in
+your procedures.  It's only for large amounts of data (or long computations
+that aren't data-driven, such as calculating a trillion digits of <font face="symbol">p</font
+>, but
+<tt>mapreduce</tt> isn't really appropriate for those examples) that parallelism
+pays off.
+
+<div class="p"><!----></div>
+By the way, if you want to examine the input file, you can't just say
+
+<div class="p"><!----></div>
+<tt>  <pre>(ss "/beatles-songs")	; NO
+
+</pre></tt>
+
+<div class="p"><!----></div>
+because a distributed filename isn't a stream, even though the file itself
+is (when viewed by the <tt>stk</tt> interface to <tt>mapreduce</tt>) a stream.
+These filenames only work as arguments to <tt>mapreduce</tt> itself.  But we
+can use <tt>mapreduce</tt> to examine the file by applying null transformations
+in the map and reduce stages:
+
+<div class="p"><!----></div>
+<tt>  <pre>(ss (mapreduce list cons-stream the-empty-stream "/beatles-songs"))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+The mapper function is <tt>list</tt> because the mapper must always return a
+list of key-value pairs; in this case, <tt>map</tt> will call <tt>list</tt> with
+one argument and so it'll return a list of length one.
+
+<div class="p"><!----></div>
+Now we'd like to find the most commonly used word in Beatle song titles.
+There are few enough words so that we could really do this on one processor,
+but as an exercise in parallelism we'll do it partly in parallel.  The trick
+is to have each reduce process find the most common word starting with a
+particular letter.  Then we'll have 26 candidates from which to choose the
+absolutely most common word on one processor.
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (find-max-mapper kv-pair)
+  (list (make-kv-pair (first (kv-key kv-pair))
+		      kv-pair)))
+
+<div class="p"><!----></div>
+(define (find-max-reducer current so-far)
+  (if (&#62; (kv-value current) (kv-value so-far))
+      current
+      so-far))
+
+<div class="p"><!----></div>
+(define frequent (mapreduce find-max-mapper find-max-reducer
+			    (make-kv-pair 'foo 0) wordcounts))
+
+<div class="p"><!----></div>
+&#62; (ss frequent)
+
+<div class="p"><!----></div>
+&#62; (stream-accumulate find-max-reducer (make-kv-pair 'foo 0)
+		     (stream-map kv-value frequent))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+This is a little tricky.  In the <tt>wordcounts</tt> stream, each key-value
+pair has a word as the key, and the count for that word as the value:
+<tt>(back&nbsp;.&nbsp;3)</tt>.  The mapper transforms this into a key-value pair in
+which the key is the first letter of the word, and the value is <i>the
+entire input key-value pair </i>: <tt>(b&nbsp;.&nbsp;(back&nbsp;.&nbsp;3))</tt>.  Each <tt>reduce</tt>
+process gets all the pairs with a particular key, i.e., all the ones with
+the same first letter of the word.  The reducer sees only the values from
+those pairs, but each value is itself a key-value pair!  That's why the
+reducer has to compare the <tt>kv-value</tt> of its two arguments.
+
+<div class="p"><!----></div>
+As another example, here's a way to count the total number of lines in all
+of Shakespeare's plays:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define will (mapreduce (lambda (kv-pair) (list (make-kv-pair 'line 1)))
+			+ 0 "/gutenberg/shakespeare"))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+For each line in Shakespeare, we make exactly the same pair <tt>(line&nbsp;.&nbsp;1)</tt>.
+Then, in the <tt>reduce</tt> stage, all the ones in all those pairs are added.
+But this is actually a bad example!  Since all the keys are the same (the
+word <tt>line</tt>), only one <tt>reduce</tt> process is run, so the counting isn't
+done in parallel.  A better way would be to count each play separately, then
+add those results if desired.  You'll do that in lab.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>

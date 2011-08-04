@@ -1,0 +1,424 @@
+<b>CS 61A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Lecture Notes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Week 13</b>
+<div class="p"><!----></div>
+Topic: Analyzing evaluator
+<div class="p"><!----></div>
+<b>Reading:</b>
+
+<div class="p"><!----></div>
+To work with the ideas in this section you should first
+
+<div class="p"><!----></div>
+<tt>  <pre>(load "&#126;cs61a/lib/analyze.scm")
+
+</pre></tt>
+in order to get the analyzing metacircular evaluator.
+
+<div class="p"><!----></div>
+<b>Inefficiency in the Metacircular Evaluator</b>
+
+<div class="p"><!----></div>
+Suppose we've defined the factorial function as follows:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (fact num)
+  (if (= num 0)
+      1
+      (* num (fact (- num 1)))))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+What happens when we compute <tt>(fact&nbsp;3)</tt>?
+
+<div class="p"><!----></div>
+<tt>  <pre>eval (fact 3)
+  self-evaluating?  ==&#62;  #f     if-alternative  ==&#62;  (* num (fact (- num 1)))
+  variable?  ==&#62;  #f               eval (* num (fact (- num 1)))
+  quoted?  ==&#62;  #f                   self-evaluating?  ==&#62;  #f
+  assignment?  ==&#62;  #f               ...
+  definition?  ==&#62;  #f               list-of-values (num (fact (- num 1)))
+  if?  ==&#62;  #f                         ...
+  lambda?  ==&#62;  #f                     eval (fact (- num 1))
+  begin?  ==&#62;  #f                        ...
+  cond?  ==&#62;  #f                         apply &lt;procedure fact&#62; (2)
+  application?  ==&#62;  #t                    eval (if (= num 0) ...)
+  eval fact
+    self-evaluating?  ==&#62;  #f
+    variable?  ==&#62;  #t
+    lookup-variable-value  ==&#62;  &lt;procedure fact&#62;
+    list-of-values (3)
+      eval 3  ==&#62; 3
+    apply &lt;procedure fact&#62; (3)
+      eval (if (= num 0) ...)
+	self-evaluating?  ==&#62;  #f
+	variable?  ==&#62;  #f
+	quoted?  ==&#62;  #f
+	assignment?  ==&#62;  #f
+	definition?  ==&#62;  #f
+        if?  ==&#62;  #t
+          eval-if (if (= num 0) ...)
+            if-predicate  ==&#62;  (= num 0)
+              eval (= num 0)
+                self-evaluating?  ==&#62;  #f
+                ...
+
+</pre></tt>
+
+<div class="p"><!----></div>
+Four separate times, the evaluator has to examine the procedure body,
+decide that it's an <tt>if</tt> expression, pull out its component parts,
+and evaluate those parts (which in turn involves deciding what type
+of expression each part is).
+
+<div class="p"><!----></div>
+This is one reason why interpreted languages are so much slower than compiled
+languages:  The interpreter does the syntactic analysis of the program over
+and over again.  The compiler does the analysis once, and the compiled
+program can just do the part of the computation that depends on the actual
+values of variables.
+
+<div class="p"><!----></div>
+<b>Separating Analysis from Execution</b>
+
+<div class="p"><!----></div>
+<tt>Eval</tt> takes two arguments, an expression and an environment.  Of those,
+the expression argument is (obviously!)&nbsp;the same every time we revisit the
+same expression, whereas the environment will be different each time.  For
+example, when we compute <tt>(fact&nbsp;3)</tt> we evaluate the body of <tt>fact</tt>
+in an environment in which <tt>num</tt> has the value 3.  That body includes
+a recursive call to compute <tt>(fact&nbsp;2)</tt>, in which we evaluate the same
+body, but now in an environment with <tt>num</tt> bound to 2.
+
+<div class="p"><!----></div>
+Our plan is to look at the evaluation process, find those parts which depend
+only on <tt>exp</tt> and not on <tt>env</tt>, and do those only once.  The
+procedure that does this work is called <tt>analyze</tt>.
+
+<div class="p"><!----></div>
+What is the result of <tt>analyze</tt>?  It has to be something that can
+be combined somehow with an environment in order to return a value.
+The solution is that <tt>analyze</tt> returns a procedure that takes only
+<tt>env</tt> as an argument, and does the rest of the evaluation.
+
+<div class="p"><!----></div>
+Instead of
+
+<div class="p"><!----></div>
+<tt>  <pre>(eval exp env)  ==&#62;  value
+
+</pre></tt>
+
+<div class="p"><!----></div>
+we now have
+
+<div class="p"><!----></div>
+<tt>  <pre>1.  (analyze exp)  ==&#62;  exp-procedure
+2.  (exp-procedure env)  ==&#62;  value
+
+</pre></tt>
+
+<div class="p"><!----></div>
+When we evaluate the same expression again, we only have to repeat step 2.
+What we're doing is akin to memoization, in that we remember the result
+of a computation to avoid having to repeat it.  The difference is that
+now we're remembering something that's only part of the solution to the
+overall problem, instead of a complete solution.
+
+<div class="p"><!----></div>
+We can duplicate the effect of the original <tt>eval</tt> this way:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (eval exp env)
+  ((analyze exp) env))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+<b>The Implementation Details</b>
+
+<div class="p"><!----></div>
+<tt>Analyze</tt> has a structure similar to that of the original eval:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (eval exp env)                (define (analyze exp)
+  (cond ((self-evaluating? exp)         (cond ((self-evaluating? exp)
+         exp)                                  (analyze-self-eval exp))
+        ((variable? exp)                      ((variable? exp)
+         (lookup-var-val exp env))             (analyze-var exp))
+        ...                                   ...
+        ((foo? exp) (eval-foo exp env))       ((foo? exp) (analyze-foo exp))
+        ...))                                 ...))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+The difference is that the procedures such as <tt>eval-if</tt> that take
+an expression and an environment as arguments have been replaced by
+procedures such as <tt>analyze-if</tt> that take only the expression as argument.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+How do these analysis procedures work?  As an intermediate step in our
+understanding, here is a version of <tt>analyze-if</tt> that exactly follows
+the structure of <tt>eval-if</tt> and doesn't save any time:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (eval-if exp env)
+  (if (true? (eval (if-predicate exp) env))
+      (eval (if-consequent exp) env)
+      (eval (if-alternative exp) env)))
+
+<div class="p"><!----></div>
+(define (analyze-if exp)
+  (lambda (env)
+    (if (true? (eval (if-predicate exp) env))
+	(eval (if-consequent exp) env)
+	(eval (if-alternative exp) env))))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+This version of <tt>analyze-if</tt> returns a procedure with <tt>env</tt> as its
+argument, whose body is exactly the same as the body of the original
+<tt>eval-if</tt>.  Therefore, if we do
+
+<div class="p"><!----></div>
+<tt>  <pre>((analyze-if some-if-expression) some-environment)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+the result will be the same as if we'd said
+
+<div class="p"><!----></div>
+<tt>  <pre>(eval-if some-if-expression some-environment)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+in the original metacircular evaluator.
+
+<div class="p"><!----></div>
+But we'd like to improve on this first version of <tt>analyze-if</tt> because
+it doesn't really avoid any work.  Each time we call the procedure that
+<tt>analyze-if</tt> returns, it will do all of the work that the original
+<tt>eval-if</tt> did.
+
+<div class="p"><!----></div>
+The first version of <tt>analyze-if</tt> contains three calls to <tt>eval</tt>.
+Each of those calls does an analysis of an expression and then a
+computation of the value in the given environment.  What we'd like to
+do is split each of those <tt>eval</tt> calls into its two separate parts,
+and do the first part only once, not every time:
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (analyze-if exp)
+  (let ((pproc (analyze (if-predicate exp)))
+	(cproc (analyze (if-consequent exp)))
+	(aproc (analyze (if-alternative exp))))
+    (lambda (env)
+      (if (true? (pproc env))
+	  (cproc env)
+	  (aproc env)))))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+In this final version, the procedure returned by <tt>analyze-if</tt>
+doesn't contain any analysis steps.  All of the components were
+already analyzed before we call that procedure, so no further
+analysis is needed.
+
+<div class="p"><!----></div>
+The biggest gain in efficiency comes from the way in which <tt>lambda</tt>
+expressions are handled.  In the original metacircular evaluator,
+leaving out some of the data abstraction for clarity here, we have
+
+<div class="p"><!----></div>
+<tt>  <pre>(define (eval-lambda exp env)
+  (list 'procedure exp env))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+The evaluator does essentially nothing for a <tt>lambda</tt> expression
+except to remember the procedure's text and the environment in which
+it was created.  But in the analyzing evaluator we analyze the body
+of the procedure; what is stored as the representation of the procedure
+does not include its text!  Instead, the evaluator represents a procedure
+in the metacircular Scheme as a procedure in the underlying Scheme,
+along with the formal parameters and the defining environment.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<b>Level Confusion</b>
+
+<div class="p"><!----></div>
+The analyzing evaluator turns an expression such as
+
+<div class="p"><!----></div>
+<tt>  <pre>(if A B C)
+
+</pre></tt>
+
+<div class="p"><!----></div>
+into a procedure
+
+<div class="p"><!----></div>
+<tt>  <pre>(lambda (env)
+  (if (A-execution-procedure env)
+      (B-execution-procedure env)
+      (C-execution-procedure env)))
+
+</pre></tt>
+
+<div class="p"><!----></div>
+This may seem like a step backward; we're trying to implement <tt>if</tt>
+and we end up with a procedure that does an <tt>if</tt>.  Isn't this
+an infinite regress?
+
+<div class="p"><!----></div>
+No, it isn't.  The <tt>if</tt> in the execution procedure is handled by the
+underlying Scheme, not by the metacircular Scheme.  Therefore, there's no
+regress; we don't call <tt>analyze-if</tt> for that one.  Also, the <tt>if</tt> in
+the underlying Scheme is much faster than having to do the syntactic
+analysis for the <tt>if</tt> in the meta-Scheme.
+
+<div class="p"><!----></div>
+<b>So What?</b>
+
+<div class="p"><!----></div>
+The syntactic analysis of expressions is a large part of what a compiler
+does.  In a sense, this analyzing evaluator is a compiler!  It compiles
+Scheme into Scheme, so it's not a very useful compiler, but it's really
+not that much harder to compile into something else, such as the machine
+language of a particular computer.
+
+<div class="p"><!----></div>
+A compiler whose structure is similar to this one is called a <i>recursive
+descent </i> compiler.  Today, in practice, most compilers use a different
+technique (called a stack machine) because it's possible to automate the
+writing of a parser that way.  (I mentioned this earlier as an example of
+data-directed programming.)  But if you're writing a parser by hand, it's
+easiest to use recursive descent.
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+<font face="symbol"></font
+> <b>Software reliability: the Therac failures</b>
+
+<div class="p"><!----></div>
+<br /><br /><br />
+<dl compact="compact">
+ <dt>
+<font face="symbol"></font
+></dt>
+<dd>
+6 accidents, 4 deaths
+</dd></dl><dl><dd><dl compact="compact"><dt>\triangleright</dt><dd>
+but 100s of lives saved
+</dd></dl></dd></dl><br /><br />
+<dl compact="compact">
+ <dt>
+<font face="symbol"></font
+></dt>
+<dd>
+no bad guys (cf. Ford Pinto case)
+</dd></dl><br /><br />
+<dl compact="compact">
+ <dt>
+<font face="symbol"></font
+></dt>
+<dd>
+Software doesn't degrade like hardware
+</dd></dl><dl><dd><dl compact="compact"><dt>\triangleright</dt><dd>
+but it rots anyway
+</dd></dl></dd></dl><dl><dd><dl compact="compact"><dt>\triangleright</dt><dd>
+but it has much greater complexity
+</dd></dl></dd></dl><dl compact="compact"><dt></dt>
+<dd>cf. Star Wars (birth of CPSR)
+</dd></dl><br /><br />
+<dl compact="compact">
+ <dt>
+<font face="symbol"></font
+></dt>
+<dd>
+Continuum of life-or-deathness: Clearly Therac yes, clearly video game no.
+</dd></dl> But what about OS, spreadsheet, etc.?
+
+<div class="p"><!----></div>
+<br /><br />
+<dl compact="compact">
+ <dt>
+<font face="symbol"></font
+></dt>
+<dd>
+Therac bugs
+</dd></dl><dl><dd><dl compact="compact"><dt>\triangleright</dt><dd>
+no atomic test and set
+</dd></dl></dd></dl><dl><dd><dl compact="compact"><dt>\triangleright</dt><dd>
+hardware interlocks removed
+</dd></dl></dd></dl><dl><dd><dl compact="compact"><dt>\triangleright</dt><dd>
+UI problems:
+</dd></dl></dd></dl> <dl><dd>cursor position
+</dd></dl>
+ <dl><dd>defaults
+</dd></dl>
+ <dl><dd>too many error messages
+</dd></dl>
+<dl><dd><dl compact="compact"><dt>\triangleright</dt><dd>
+documentation
+</dd></dl></dd></dl><dl><dd><dl compact="compact"><dt>\triangleright</dt><dd>
+organizational response
+</dd></dl></dd></dl><dl><dd><dl compact="compact"><dt></dt><dd>
+easy to see after the fact, but problems are inherent in
+organizations (esp. ones that can be sued)
+</dd></dl></dd></dl><br /><br />
+<dl compact="compact">
+ <dt>
+<font face="symbol"></font
+></dt>
+<dd>
+Solutions
+</dd></dl><dl><dd><dl compact="compact"><dt>\triangleright</dt><dd>
+redundancy
+</dd></dl></dd></dl><dl><dd><dl compact="compact"><dt>\triangleright</dt><dd>
+fail soft (work despite bugs)
+</dd></dl></dd></dl><dl><dd><dl compact="compact"><dt>\triangleright</dt><dd>
+audit trail
+</dd></dl></dd></dl><dl><dd><dl compact="compact"><dt>\triangleright</dt><dd>
+Software Engineering (an attitude about programming)
+</dd></dl></dd></dl> <dl><dd>Design techniques
+</dd></dl>
+ <dl><dd>modularization (cf. OOP)
+</dd></dl>
+ <dl><dd>understand concurrency (semaphores)
+</dd></dl>
+ <dl><dd>analyze invariants
+</dd></dl>
+ <dl><dd>Verification techniques
+</dd></dl>
+ <dl><dd>correctness proofs</dd></dl>
+(can't be perfect because of halting theorem but still useful)
+
+<div class="p"><!----></div>
+ <dl><dd>automatic analysis in compiler
+</dd></dl>
+ <dl><dd>Debugging techniques
+</dd></dl>
+ <dl><dd>black box vs. glass box
+</dd></dl>
+ <dl><dd>don't break old code with new fix
+</dd></dl>
+ <dl><dd>introduce bugs on purpose to analyze results downstream
+</dd></dl>
+ <dl><dd>debug by subtraction, not addition
+</dd></dl>
+<b>Note: The first part of programming project 4 is this week.</b>
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
