@@ -87,6 +87,9 @@ def setup_dbs():
     (conn, cursor) = getDbCursor(course_db)
     cursor.execute('CREATE TABLE chapter(id INTEGER PRIMARY KEY, path TEXT);')
     cursor.execute('CREATE TABLE visits(login TEXT, chapter_id INTEGER);')
+    cursor.execute('CREATE TABLE SPECIAL_FLAG(login TEXT, SPECIAL_FLAG TEXT);')
+    cursor.execute('CREATE TABLE quiz_times(login TEXT, chapter_id INTEGER, timestamp INTEGER);')
+    cursor.execute('CREATE TABLE visits_times(login TEXT, chapter_id INTEGER, timestamp INTEGER);')
     conn.commit()
     cursor.close()
 
