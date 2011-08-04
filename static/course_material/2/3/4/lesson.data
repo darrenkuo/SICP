@@ -1,1 +1,1 @@
-{'index': 4, 'type': u'lesson', 'readable': u'True and checkAccessed(3, user) and (not checkSF(SF_PROGRAMMED, user) and not checkSF(SF_SCHEME, user))', 'chapters': [], 'title': u'Little People'}
+{'index': 4, 'readable': u'True and checkAccessed(3, user) and (not checkSF(SF_SCHEME, user))', 'type': u'lesson', 'chapters': [], 'title': u'Little People'}
